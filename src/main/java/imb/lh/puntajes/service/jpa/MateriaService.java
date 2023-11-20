@@ -41,5 +41,9 @@ public class MateriaService implements IMateria {
 	public boolean existe(Integer id) {
 		 return id != null && materiaRepository.existsById(id);
 	}
+	 @Override
+	    public List<Materia> buscarPorCarreraId(Integer carreraId) {
+	        return materiaRepository.findByCarreraId(carreraId);
+	    }
 
 }

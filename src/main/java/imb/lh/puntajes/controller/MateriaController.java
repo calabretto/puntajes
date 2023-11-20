@@ -50,7 +50,13 @@ public class MateriaController {
 		return materiaService.existe(materia.getId()) ? ResponseUtil.success(materiaService.guardar(materia))
 				: ResponseUtil.badRequest("No se pudo actualizar la materia, el ID ingresado no existe");
 	}
-	
+	@GetMapping("/carrera/{carreraId}")
+	public ResponseEntity<APIResponse<List<Materia>>> buscarMateriasPorCarrera(@PathVariable("carreraId") Integer carreraId) {
+	    List<Materia> materiasPorCarrera = materiaService.buscarPorCarreraId(carreraId);
+	    return materiasPorCarrera.isEmpty() ? ResponseUtil.notFound("No hay materias para esta carrera")
+	            : ResponseUtil.success(materiasPorCarrera);
+	}
+
 	@DeleteMapping("{id}")
 	public ResponseEntity<APIResponse<Materia>> eliminarMateria(@PathVariable("id") Integer id){
 	   return materiaService.existe(id) ? ResponseUtil.success(null)

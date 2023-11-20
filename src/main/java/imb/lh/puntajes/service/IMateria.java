@@ -12,4 +12,6 @@ public interface IMateria {
     public Materia guardar(Materia materia);
     public void eliminar(Integer id);
     public boolean existe (Integer id);
+    List<Materia> buscarPorCarreraId(Integer carreraId);
+    
 }
