@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Obtener Materia por ID</title>
+</head>
+<body>
+    <h1>Obtener Materia por ID</h1>
+    <form id="materiaForm">
+        <label for="materiaId">ID de la Materia:</label><br>
+        <input type="text" id="materiaId" name="materiaId"><br><br>
+        <button type="submit">Obtener Materia</button>
+    </form>
+
+    <div id="materiaInfo"></div>
+
+    <script>
+        document.getElementById("materiaForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const materiaId = document.getElementById("materiaId").value;
+
+            fetch(`http://localhost:8080/api/v1/materia/${materiaId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se encontró la materia');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const materiaInfo = document.getElementById("materiaInfo");
+                    materiaInfo.innerHTML = `
+                        <h2>Información de la Materia</h2>
+                        <p>ID: ${data.data.id}</p>
+                        <p>Nombre: ${data.data.nombre}</p>
+                        <p>Carrera ID: ${data.data.carrera.id}</p>
+                        <p>Carrera Nombre: ${data.data.carrera.nombre}</p>
+                        <!-- Puedes añadir aquí más detalles si es necesario -->
+                    `;
+                })
+                .catch(error => {
+                    const materiaInfo = document.getElementById("materiaInfo");
+                    materiaInfo.innerHTML = `<p>Error: ${error.message}</p>`;
+                });
+        });
+    </script>
+</body>
+</html>

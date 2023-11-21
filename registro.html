@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Aplicante</title>
+</head>
+<body>
+    <form id="aplicanteForm">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br><br>
+    
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido" name="apellido" required><br><br>
+    
+        <label for="dni">DNI:</label>
+        <input type="text" id="dni" name="dni" required><br><br>
+    
+        <label for="email">Correo electrónico:</label>
+        <input type="email" id="email" name="email" required><br><br>
+    
+        <input type="submit" value="Registrar">
+    </form>
+    
+    <script>
+        document.getElementById("aplicanteForm").addEventListener("submit", function(event) {
+        event.preventDefault(); 
+
+        const formData = new FormData(this); 
+
+        const aplicante = {
+            id: null,
+            nombre: formData.get('nombre'),
+            apellido: formData.get('apellido'),
+            dni: parseInt(formData.get('dni')), // Asegúrate de convertir a número
+            mail: formData.get('email'),
+            habilitado: true // Podrías necesitar manejar esto desde el servidor
+        };
+
+        fetch('http://localhost:8080/api/v1/aplicante', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(aplicante)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al registrar al aplicante');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Aplicante registrado:', data);
+            // Podrías mostrar un mensaje de éxito o redirigir a otra página
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Podrías mostrar un mensaje de error al usuario
+        });
+    });
+    </script>
+</body>
+</html>

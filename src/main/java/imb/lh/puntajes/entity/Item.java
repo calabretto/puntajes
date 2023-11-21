@@ -1,5 +1,8 @@
 package imb.lh.puntajes.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,8 +17,10 @@ public class Item {
 	private Integer id;
 	private String nombre;
 	private Integer orden;
+	
 	@ManyToOne
 	@JoinColumn(name="encabezado_id")
+	@JsonIgnore
 	private Encabezado encabezado;
 	private boolean habilitado;
 	public Integer getId() {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ import imb.lh.puntajes.entity.Aplicante; // Cambio en el nombre de la entidad
 import imb.lh.puntajes.service.IAplicante; // Cambio en el nombre del servicio
 import jakarta.validation.ConstraintViolationException;
 
-// http://localhost:8080/api/v1/aplicante
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 @RestController
 @RequestMapping("/api/v1/aplicante") 
 public class AplicanteController { 
@@ -38,6 +39,13 @@ public class AplicanteController {
     	Aplicante aplicante = aplicanteService.buscarPorId(id); // Cambio en el nombre de la variable y del método del servicio
     	return aplicante == null ? ResponseUtil.notFound("No se encontro el aplicante con el identificador proporcionado") // Cambio en el mensaje
     			: ResponseUtil.success(aplicante);
+    }
+    
+    @GetMapping("/dni/{dni}")
+    public ResponseEntity<APIResponse<Aplicante>> buscarAplicantePorDNI(@PathVariable("dni") Integer dni) {
+        Aplicante aplicante = aplicanteService.buscarPorDNI(dni);
+        return aplicante == null ? ResponseUtil.notFound("No se encontró el aplicante con el DNI proporcionado")
+                : ResponseUtil.success(aplicante);
     }
 	
 	@PostMapping("")
