@@ -4,23 +4,50 @@
   <title>Fetch Test</title>
 </head>
 <body>
-  <button onclick="getData()">Obtener Datos</button>
 
-  <script>
-    function getData() {
-      fetch('http://localhost:8080/api/v1/materia/38')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.status);
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log('Datos recibidos:', data);
-          // Aquí podrías hacer algo con los datos recibidos
-        })
-        .catch(error => console.error('Error al obtener datos:', error));
-    }
-  </script>
+  <div id="formulario-container"></div>
+
+
+
+ 
 </body>
+<script>
+fetch('http://localhost:8080/api/v1/encabezado')
+    .then(response => response.json())
+    .then(data => {
+        const formContainer = document.getElementById('formulario-container');
+
+        if (data && Array.isArray(data.data)) {
+            data.data.forEach(section => {
+                const fieldset = document.createElement('fieldset');
+                const legend = document.createElement('legend');
+                legend.textContent = section.descripcion;
+                fieldset.appendChild(legend);
+
+                section.item.forEach(item => {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'checkbox');
+                    input.setAttribute('id', `item_${item.id}`);
+                    input.setAttribute('name', `item_${item.id}`);
+                    input.setAttribute('value', item.nombre);
+                    const label = document.createElement('label');
+                    label.setAttribute('for', `item_${item.id}`);
+                    label.textContent = item.nombre;
+
+                    fieldset.appendChild(input);
+                    fieldset.appendChild(label);
+                    fieldset.appendChild(document.createElement('br'));
+                });
+
+                formContainer.appendChild(fieldset);
+            });
+        } else {
+            console.error('El formato de datos no es el esperado');
+        }
+    })
+    .catch(error => {
+        console.error('Hubo un error al obtener los datos:', error);
+    });
+
+</script>
 </html>
