@@ -6,8 +6,8 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div class="page slide-page" id="formulario-container">
+<div></div>
+<div style="width: 80%;" id="formulario-container">
   <!-- Este div estará vacío, se llenará con los datos obtenidos -->
 </div>
 
@@ -26,7 +26,7 @@
           tituloEncabezado.textContent = encabezado.descripcion;
           columna.appendChild(tituloEncabezado);
 
-          let totalMaximo = encabezado.total || 0;
+          let totalMaximo = encabezado.total || 0; 
 
           let totalAnterior = 0;
           encabezado.item.forEach(item => {
