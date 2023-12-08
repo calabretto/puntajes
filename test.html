@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario con Items Dinámicos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page slide-page" id="formulario-container">
+  <!-- Este div estará vacío, se llenará con los datos obtenidos -->
+</div>
+
+<script>
+  fetch('http://localhost:8080/api/v1/encabezado')
+    .then(response => response.json())
+    .then(data => {
+      const formContainer = document.getElementById('formulario-container');
+
+      if (data && Array.isArray(data.data)) {
+        data.data.forEach(encabezado => {
+          const columna = document.createElement('div');
+          columna.classList.add('column');
+
+          const tituloEncabezado = document.createElement('h1');
+          tituloEncabezado.textContent = encabezado.descripcion;
+          columna.appendChild(tituloEncabezado);
+
+          let totalMaximo = encabezado.total || 0;
+
+          let totalAnterior = 0;
+          encabezado.item.forEach(item => {
+            const campo = document.createElement('div');
+            campo.classList.add('field');
+
+            const label = document.createElement('label');
+            label.setAttribute('for', `item_${item.id}`);
+            label.textContent = item.nombre;
+            campo.appendChild(label);
+
+            const input = document.createElement('input');
+            input.setAttribute('type', 'number');
+            input.setAttribute('id', `item_${item.id}`);
+            input.setAttribute('name', `item_${item.id}`);
+            input.setAttribute('min', '0');
+            input.setAttribute('step', '1');
+            campo.appendChild(input);
+
+            columna.appendChild(campo);
+
+            // Si el item no es el 'total', calcular la suma de los valores anteriores
+            if (item.nombre !== 'Total') {
+              totalAnterior += parseInt(item.valor) || 0;
+            }
+          });
+
+          // Encontrar el input del 'total' y asignarle el valor adecuado
+          const inputTotal = columna.querySelector('input[name="item_Total"]');
+          if (inputTotal) {
+            inputTotal.value = totalAnterior > totalMaximo ? totalMaximo : totalAnterior;
+          }
+
+          formContainer.appendChild(columna);
+        });
+      } else {
+        console.error('El formato de datos no es el esperado');
+      }
+    })
+    .catch(error => {
+      console.error('Hubo un error al obtener los datos:', error);
+    });
+</script>
+
+</body>
+</html>
