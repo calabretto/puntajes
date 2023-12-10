@@ -17,7 +17,9 @@ public class Item {
 	private Integer id;
 	private String nombre;
 	private Integer orden;
+	private double valor;
 	
+
 	@ManyToOne
 	@JoinColumn(name="encabezado_id")
 	@JsonIgnore
@@ -52,6 +54,12 @@ public class Item {
 	}
 	public void setHabilitado(boolean habilitado) {
 		this.habilitado = habilitado;
+	}
+	public double getValor() {
+		return valor;
+	}
+	public void setValor(double valor) {
+		this.valor = valor;
 	}
 	
 	

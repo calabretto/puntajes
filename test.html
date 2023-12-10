@@ -26,16 +26,13 @@
           tituloEncabezado.textContent = encabezado.descripcion;
           columna.appendChild(tituloEncabezado);
 
-          let totalMaximo = encabezado.total || 0; 
-
-          let totalAnterior = 0;
           encabezado.item.forEach(item => {
             const campo = document.createElement('div');
             campo.classList.add('field');
 
             const label = document.createElement('label');
             label.setAttribute('for', `item_${item.id}`);
-            label.textContent = item.nombre;
+            label.textContent = `${item.nombre} - ${item.valor}`; // Mostrar el nombre del ítem y su valor
             campo.appendChild(label);
 
             const input = document.createElement('input');
@@ -43,22 +40,33 @@
             input.setAttribute('id', `item_${item.id}`);
             input.setAttribute('name', `item_${item.id}`);
             input.setAttribute('min', '0');
-            input.setAttribute('step', '1');
+            input.setAttribute('step', '0.01'); // Permitir valores decimales
             campo.appendChild(input);
 
+            const resultado = document.createElement('input');
+            resultado.setAttribute('type', 'text');
+            resultado.setAttribute('readonly', 'readonly');
+            campo.appendChild(resultado);
+
+            input.addEventListener('input', () => {
+              const value = parseFloat(input.value) || 0;
+              const multiplicacion = value * parseFloat(item.valor) || 0; // Calcular la multiplicación con el valor del ítem
+              resultado.value = multiplicacion.toFixed(2); // Mostrar el resultado con dos decimales
+
+              // Recalcular la suma total de las multiplicaciones para el encabezado actual
+              const inputs = encabezado.item.map(encItem => parseFloat(document.getElementById(`item_${encItem.id}`).value) || 0);
+              const totalMultiplicaciones = encabezado.item.reduce((total, encItem, index) => {
+                return total + (parseFloat(encItem.valor) || 0) * inputs[index];
+              }, 0);
+
+              const resultadoTotal = columna.querySelector('input[name="item_Total"]');
+              if (resultadoTotal) {
+                resultadoTotal.value = totalMultiplicaciones.toFixed(2); // Mostrar el total con dos decimales
+              }
+            });
+
             columna.appendChild(campo);
-
-            // Si el item no es el 'total', calcular la suma de los valores anteriores
-            if (item.nombre !== 'Total') {
-              totalAnterior += parseInt(item.valor) || 0;
-            }
           });
-
-          // Encontrar el input del 'total' y asignarle el valor adecuado
-          const inputTotal = columna.querySelector('input[name="item_Total"]');
-          if (inputTotal) {
-            inputTotal.value = totalAnterior > totalMaximo ? totalMaximo : totalAnterior;
-          }
 
           formContainer.appendChild(columna);
         });
