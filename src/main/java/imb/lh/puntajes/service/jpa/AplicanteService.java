@@ -48,4 +48,12 @@ public class AplicanteService implements IAplicante {
 		return null;
 	}
 
+
+
+	@Override
+	public List<Aplicante> obtenerAplicantesPorMateria(Integer materiaId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

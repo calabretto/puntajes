@@ -34,6 +34,14 @@ public class AplicanteController {
 				: ResponseUtil.success(aplicantes);
 	}
 	
+	@GetMapping("/materia/{materiaId}")
+	public ResponseEntity<APIResponse<List<Aplicante>>> obtenerAplicantePorCarrerra(@PathVariable("materiaId")Integer materiaId){
+		List<Aplicante> aplicantes = aplicanteService.obtenerAplicantesPorMateria(materiaId); 
+		return aplicantes.isEmpty() ? ResponseUtil.notFound("No hay aplicantes") // Cambio en el mensaje
+				: ResponseUtil.success(aplicantes);
+	}
+
+	
     @GetMapping("{id}")
     public ResponseEntity<APIResponse<Aplicante>> buscarAplicantePorId(@PathVariable("id") Integer id){ // Cambio en el nombre del método y del parámetro
     	Aplicante aplicante = aplicanteService.buscarPorId(id); // Cambio en el nombre de la variable y del método del servicio
