@@ -17,6 +17,8 @@ public class Encabezado {
 	private Integer id;
 	private String descripcion;
 	private Integer orden;
+	private Integer maximo;
+	private boolean parcial;
 	
 	@OneToMany(mappedBy="encabezado")
 	private List<Item> item;
@@ -52,6 +54,18 @@ public class Encabezado {
 	}
 	public void setHabilitado(boolean habilitado) {
 		this.habilitado = habilitado;
+	}
+	public Integer getMaximo() {
+		return maximo;
+	}
+	public void setMaximo(Integer maximo) {
+		this.maximo = maximo;
+	}
+	public boolean isParcial() {
+		return parcial;
+	}
+	public void setParcial(boolean parcial) {
+		this.parcial = parcial;
 	}
 	
 	
