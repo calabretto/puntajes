@@ -2,124 +2,253 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Formulario con Items Dinámicos</title>
+  <title>Grilla</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos para el formulario */
+    #form-container {
+      width: 80%;
+      margin: 0 auto;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    #formulario-container{
+      margin-bottom: 120px;
+    }
+
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 50px;
+      background-color: black;
+      padding: 50px;
+      border-radius: 30px;
+    }
+    /* Estilos para el botón 'Enviar Datos' */
+    #enviarDatos {
+      background-color: #4CAF50;
+      margin-top: 200px;
+      margin-left: 50%;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      width: 50%;
+      
+    }
+
+    /* Estilos para el botón cuando se pasa el cursor por encima */
+    #enviarDatos:hover {
+      background-color: #45a049;
+    }
+
+    /* Estilos para el botón cuando está presionado */
+    #enviarDatos:active {
+      background-color: #3e8e41;
+    }
+    #aplicante-info {
+      text-align: left;
+    }
+
+    #total-general {
+      text-align: right;
+    }
+
+    /* Estilos para el formulario y total general */
+    .field {
+      margin-bottom: 10px;
+    }
+    .input{
+      background-color: #3e8e41;
+    }
+
+    #total-general {
+      position: relative;
+    }
+
+    #total-general.floating {
+      position: fixed;
+      top: 78%;
+      left: 85%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.616);
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      z-index: 999;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
 <body>
-<div></div>
-<div style="width: 80%;" id="formulario-container">
-  <!-- Este div estará vacío, se llenará con los datos obtenidos -->
-</div>
-<div id="total-general">
-  <h2>Total General</h2>
-  <input type="text" readonly="readonly" id="total-general-value" value="0">
-</div>
+  <div id="form-container">
+    <div id="header">
+      <h1 style="color: #ccc;">Grilla de Ponderación de antecedentes</h1>
+      <div id="aplicante-info" style="color: #ccc;">
+        <p>Aplicante ID: 1</p>
+        <p>Materia ID: 1</p>
+      </div>
+      <div id="total-general" class="floating">
+        <h2>Total General</h2>
+        <div id="total-general-value">0</div>
+      </div>
+    </div>
 
-<script>
-  fetch('http://localhost:8080/api/v1/encabezado')
-    .then(response => response.json())
-    .then(data => {
-      const formContainer = document.getElementById('formulario-container');
-      const totalGeneralField = document.getElementById('total-general-value');
+    <div id="formulario-container">
+      <!-- Aquí se llenará con los datos obtenidos -->
+    </div>
 
-      if (data && Array.isArray(data.data)) {
-        let totalGeneralSum = 0;
+    <button id="enviarDatos">Enviar Datos</button>
+  </div>
 
-        data.data.forEach(encabezado => {
-          const columna = document.createElement('div');
-          columna.classList.add('column');
+  <script>
+    // Tu script JavaScript aquí...
+    fetch('http://localhost:8080/api/v1/encabezado')
+      .then(response => response.json())
+      .then(data => {
+        const formContainer = document.getElementById('formulario-container');
+        const totalGeneralField = document.getElementById('total-general-value');
 
-          const tituloEncabezado = document.createElement('h1');
-          tituloEncabezado.textContent = `${encabezado.descripcion} - Máximo: ${encabezado.maximo} pts`;
-          columna.appendChild(tituloEncabezado);
+        if (data && Array.isArray(data.data)) {
+          let totalGeneralSum = 0;
 
-          const itemsContainer = document.createElement('div'); // Contenedor para los items
-          let totalEncabezadoSum = 0;
+          data.data.forEach(encabezado => {
+            const columna = document.createElement('div');
+            columna.classList.add('column');
 
-          encabezado.item.forEach(item => {
-            const campo = document.createElement('div');
-            campo.classList.add('field');
+            const tituloEncabezado = document.createElement('h1');
+            tituloEncabezado.textContent = `${encabezado.descripcion} - Máximo: ${encabezado.maximo} pts`;
+            columna.appendChild(tituloEncabezado);
 
-            const label = document.createElement('label');
-            label.setAttribute('for', `item_${item.id}`);
-            label.textContent = `${item.nombre} - ${item.valor}`; // Mostrar el nombre del ítem y su valor
-            campo.appendChild(label);
+            const itemsContainer = document.createElement('div'); // Contenedor para los items
+            let totalEncabezadoSum = 0;
 
-            const input = document.createElement('input');
-            input.setAttribute('type', 'number');
-            input.setAttribute('id', `item_${item.id}`);
-            input.setAttribute('name', `item_${item.id}`);
-            input.setAttribute('min', '0');
-            input.setAttribute('step', '1'); // Permitir valores decimales
-            campo.appendChild(input);
+            encabezado.item.forEach(item => {
+              const campo = document.createElement('div');
+              campo.classList.add('field');
 
-            const resultado = document.createElement('input');
-            resultado.setAttribute('type', 'text');
-            resultado.setAttribute('readonly', 'readonly');
-            resultado.value = '0'; // Establecer el valor inicial en 0
-            campo.appendChild(resultado);
+              const label = document.createElement('label');
+              label.setAttribute('for', `item_${item.id}`);
+              label.textContent = `${item.nombre} - ${item.valor}`; // Mostrar el nombre del ítem y su valor
+              campo.appendChild(label);
 
-            input.addEventListener('input', () => {
-              const value = parseFloat(input.value) || 0;
-              const multiplicacion = value * parseFloat(item.valor) || 0; // Calcular la multiplicación con el valor del ítem
-              resultado.value = multiplicacion.toFixed(2); // Mostrar el resultado con dos decimales
+              const input = document.createElement('input');
+              input.setAttribute('type', 'number');
+              input.setAttribute('id', `item_${item.id}`);
+              input.setAttribute('name', `item_${item.id}`);
+              input.setAttribute('min', '0');
 
-              recalculateTotal(encabezado); // Recalcular el total del encabezado al modificar un valor
+              campo.appendChild(input);
+
+              const resultado = document.createElement('input');
+              resultado.setAttribute('type', 'text');
+              resultado.setAttribute('readonly', 'readonly');
+              resultado.value = '0'; // Establecer el valor inicial en 0
+              campo.appendChild(resultado);
+
+              input.addEventListener('input', () => {
+                const value = parseFloat(input.value) || 0;
+                const multiplicacion = value * parseFloat(item.valor) || 0; // Calcular la multiplicación con el valor del ítem
+                resultado.value = multiplicacion.toFixed(2); // Mostrar el resultado con dos decimales
+
+                recalculateTotal(encabezado); // Recalcular el total del encabezado al modificar un valor
+              });
+
+              itemsContainer.appendChild(campo);
             });
 
-            itemsContainer.appendChild(campo);
+            const totalCampo = document.createElement('div'); // Campo para el total
+            totalCampo.classList.add('field');
+
+            const labelTotal = document.createElement('label');
+            labelTotal.textContent = `Total ${encabezado.descripcion}`;
+            totalCampo.appendChild(labelTotal);
+
+            const totalEncabezado = document.createElement('input');
+            totalEncabezado.setAttribute('type', 'text');
+            totalEncabezado.setAttribute('readonly', 'readonly');
+            totalCampo.appendChild(totalEncabezado);
+
+            columna.appendChild(itemsContainer);
+            columna.appendChild(totalCampo);
+            formContainer.appendChild(columna);
+
+            function recalculateTotal(encabezado) {
+              const inputs = itemsContainer.querySelectorAll('input[type="number"]');
+              let sum = 0;
+
+              inputs.forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                const itemId = parseInt(input.getAttribute('id').split('_')[1]);
+                const item = encabezado.item.find(item => item.id === itemId);
+                const multiplicacion = value * parseFloat(item.valor) || 0;
+                sum += multiplicacion;
+              });
+
+              totalEncabezado.value = Math.min(sum, encabezado.maximo).toFixed(2);
+              recalculateGeneralTotal();
+            }
+
+            function recalculateGeneralTotal() {
+              totalGeneralSum = Array.from(formContainer.querySelectorAll('input[type="text"][readonly="readonly"]'))
+                .filter(input => input.parentNode.textContent.includes('Total'))
+                .map(input => parseFloat(input.value) || 0)
+                .reduce((acc, curr) => acc + curr, 0);
+              totalGeneralField.textContent = totalGeneralSum.toFixed(2);
+            }
+
+            recalculateTotal(encabezado); // Calcular y mostrar el total inicial
           });
+        } else {
+          console.error('El formato de datos no es el esperado');
+        }
+      })
+      .catch(error => {
+        console.error('Hubo un error al obtener los datos:', error);
+      });
 
-          const totalCampo = document.createElement('div'); // Campo para el total
-          totalCampo.classList.add('field');
+    document.getElementById('enviarDatos').addEventListener('click', () => {
+      const items = [];
 
-          const labelTotal = document.createElement('label');
-          labelTotal.textContent = `Total ${encabezado.descripcion}`;
-          totalCampo.appendChild(labelTotal);
+      const itemFields = document.querySelectorAll('input[id^="item_"]');
+      itemFields.forEach(field => {
+        const itemId = field.id.split('_')[1];
+        const value = field.value;
+        items.push({ itemId, puntaje: value }); // Se agrega el valor del puntaje para cada ítem
+      });
 
-          const totalEncabezado = document.createElement('input');
-          totalEncabezado.setAttribute('type', 'text');
-          totalEncabezado.setAttribute('readonly', 'readonly');
-          totalCampo.appendChild(totalEncabezado);
+      const dataToSend = {
+        aplicante: {
+          id: 1 // Aquí el ID del aplicante
+        },
+        materia: {
+          id: 1 // Aquí el ID de la materia
+        },
+        periodo: {
+          id: 1 // Aquí el ID del periodo
+        },
+        items // La lista de ítems con sus valores
+      };
 
-          columna.appendChild(itemsContainer);
-          columna.appendChild(totalCampo);
-          formContainer.appendChild(columna);
-
-          function recalculateTotal(encabezado) {
-            const inputs = itemsContainer.querySelectorAll('input[type="number"]');
-            let sum = 0;
-
-            inputs.forEach(input => {
-              const value = parseFloat(input.value) || 0;
-              const itemId = parseInt(input.getAttribute('id').split('_')[1]);
-              const item = encabezado.item.find(item => item.id === itemId);
-              const multiplicacion = value * parseFloat(item.valor) || 0;
-              sum += multiplicacion;
-            });
-
-            totalEncabezado.value = Math.min(sum, encabezado.maximo).toFixed(2);
-            recalculateGeneralTotal();
-          }
-
-          function recalculateGeneralTotal() {
-            totalGeneralSum = Array.from(formContainer.querySelectorAll('input[type="text"][readonly="readonly"]'))
-              .filter(input => input.parentNode.textContent.includes('Total'))
-              .map(input => parseFloat(input.value) || 0)
-              .reduce((acc, curr) => acc + curr, 0);
-            totalGeneralField.value = totalGeneralSum.toFixed(2);
-          }
-
-          recalculateTotal(encabezado); // Calcular y mostrar el total inicial
+      fetch('http://localhost:8080/api/v1/grillatabulacion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Respuesta del servidor:', data);
+          // Manejar la respuesta del servidor si es necesario
+        })
+        .catch(error => {
+          console.error('Error al enviar los datos:', error);
         });
-      } else {
-        console.error('El formato de datos no es el esperado');
-      }
-    })
-    .catch(error => {
-      console.error('Hubo un error al obtener los datos:', error);
     });
-</script>
-
+  </script>
 </body>
 </html>
