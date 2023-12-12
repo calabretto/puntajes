@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Items</title>
+</head>
+<body>
+  <h1>Items recibidos</h1>
+
+  <div id="items-container">
+    <!-- Aquí se mostrarán los datos enviados -->
+  </div>
+
+  <script>
+    window.onload = function() {
+      const itemsContainer = document.getElementById('items-container');
+
+      // Obtener parámetros de la URL
+      const urlParams = new URLSearchParams(window.location.search);
+
+      // Recorrer todos los parámetros
+      for (const param of urlParams) {
+        const paramName = param[0];
+        const paramValue = param[1];
+
+        // Crear elemento para mostrar el nombre y valor del parámetro
+        const item = document.createElement('div');
+        item.innerHTML = `<strong>${paramName}</strong>: ${paramValue}`;
+        itemsContainer.appendChild(item);
+      }
+    }
+  </script>
+</body>
+</html>

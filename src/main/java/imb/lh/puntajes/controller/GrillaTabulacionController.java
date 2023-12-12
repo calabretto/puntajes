@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import imb.lh.puntajes.entity.GrillaTabulacion;
 import imb.lh.puntajes.service.IGrillaTabulacion;
 import jakarta.validation.ConstraintViolationException;
-
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 @RestController
 @RequestMapping("/api/v1/grillatabulacion") 
 public class GrillaTabulacionController { 
@@ -31,7 +32,14 @@ public class GrillaTabulacionController {
 		return grillatabulaciones.isEmpty() ? ResponseUtil.notFound("No hay grilla tabulaciones")
 				: ResponseUtil.success(grillatabulaciones);
 	}
-	
+	@GetMapping("/{aplicante}/{materia}/{periodo}")
+	public ResponseEntity<APIResponse<List<GrillaTabulacion>>> buscarPorIds(@PathVariable("aplicante") Integer aplicante,
+	                                                                      @PathVariable("materia") Integer materia,
+	                                                                      @PathVariable("periodo") Integer periodo) {
+	    List<GrillaTabulacion> grillatabulaciones = grillatabulacionService.buscarPorIds(aplicante, materia, periodo);
+	    return grillatabulaciones.isEmpty() ? ResponseUtil.notFound("No hay grilla tabulaciones para los IDs proporcionados")
+	            : ResponseUtil.success(grillatabulaciones);
+	}
     @GetMapping("{id}")
     public ResponseEntity<APIResponse<GrillaTabulacion>> buscarGrillaTabulacionPorId(@PathVariable("id") Integer id){
     	GrillaTabulacion grillatabulacion = grillatabulacionService.buscarPorId(id);

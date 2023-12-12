@@ -2,47 +2,92 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Formulario con Carreras y Materias</title>
+  <title>Carreras y Materias</title>
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Estilos para organizar el diseño */
+    select {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-
-<div id="carreras-container"></div>
-
+<div>
+<div><!-- Menú desplegable para las carreras -->
+<label for="carreras">Selecciona una carrera:</label>
+<select id="carreras" onchange="mostrarMaterias()">
+  <option value="">Seleccionar carrera</option>
+  <!-- Aquí se generarán las opciones de las carreras con JavaScript -->
+</select>
+</div>
+<!-- Menú desplegable para las materias de la carrera seleccionada -->
+<div id="materias">
+  <label for="materiasCarrera">Materias:</label>
+  <select id="materiasCarrera">
+    <option value="">Selecciona una carrera primero</option>
+  </select>
+</div>
+</div>
 <script>
-  fetch('http://localhost:8080/api/v1/carrera')
-    .then(response => response.json())
-    .then(data => {
-      const carrerasContainer = document.getElementById('carreras-container');
+  // Obtener el select de carreras y el de materias
+  const selectCarreras = document.getElementById('carreras');
+  const selectMaterias = document.getElementById('materiasCarrera');
 
-      if (data && Array.isArray(data)) {
-        data.forEach(carrera => {
-          const carreraElement = document.createElement('div');
-          carreraElement.classList.add('carrera');
+  // Función para mostrar las materias de la carrera seleccionada
+  function mostrarMaterias() {
+    const selectedIndex = selectCarreras.selectedIndex;
 
-          const tituloCarrera = document.createElement('h1');
-          tituloCarrera.textContent = carrera.nombre;
-          carreraElement.appendChild(tituloCarrera);
+    // Limpiar las opciones anteriores en el select de materias
+    selectMaterias.innerHTML = '';
 
-          const materiasContainer = document.createElement('ul'); // Contenedor para las materias
+    if (selectedIndex === 0) {
+      const defaultOption = document.createElement('option');
+      defaultOption.text = 'Selecciona una carrera primero';
+      selectMaterias.appendChild(defaultOption);
+      return;
+    }
 
-          carrera.materia.forEach(materia => {
-            const materiaItem = document.createElement('li');
-            materiaItem.textContent = materia.nombre;
-            materiasContainer.appendChild(materiaItem);
+    // Obtener la URL para obtener los datos JSON de las carreras
+    const url = `http://localhost:8080/api/v1/carrera`;
+
+    // Realizar la petición fetch para obtener los datos
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const carreraSeleccionada = data.data.find(carrera => carrera.id === selectedIndex);
+        if (carreraSeleccionada) {
+          carreraSeleccionada.materia.forEach(materia => {
+            const option = document.createElement('option');
+            option.text = `${materia.id}: ${materia.nombre}`; // Agregar ID al nombre de la materia
+            option.value = materia.id; // Establecer el valor como el ID de la materia
+            selectMaterias.appendChild(option);
           });
+        } else {
+          console.error('Carrera no encontrada');
+        }
+      })
+      .catch(error => console.error('Error al obtener los datos:', error));
+  }
 
-          carreraElement.appendChild(materiasContainer);
-          carrerasContainer.appendChild(carreraElement);
+  // Llenar el select de carreras con los datos obtenidos al cargar la página
+  window.onload = function () {
+    // Obtener la URL para obtener los datos JSON de las carreras
+    const url = `http://localhost:8080/api/v1/carrera`;
+
+    // Realizar la petición fetch para obtener los datos
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        data.data.forEach(carrera => {
+          const option = document.createElement('option');
+          option.text = carrera.nombre;
+          option.value = carrera.id; // Establecer el valor como el ID de la carrera
+          selectCarreras.appendChild(option);
         });
-      } else {
-        console.error('El formato de datos no es el esperado');
-      }
-    })
-    .catch(error => {
-      console.error('Hubo un error al obtener los datos:', error);
-    });
+      })
+      .catch(error => console.error('Error al obtener los datos:', error));
+  };
 </script>
-
 </body>
 </html>

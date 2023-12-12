@@ -27,6 +27,12 @@ public class GrillaTabulacionService implements IGrillaTabulacion {
 		 return optional.orElse(null);
     }
 	
+	 @Override
+	    public List<GrillaTabulacion> buscarPorIds(Integer aplicante, Integer materia, Integer periodo) {
+	        // Implementación para buscar por aplicante_id, materia_id y periodo_id
+	        return grillatabulacionRepository.buscarPorIds(aplicante, materia, periodo);
+	    }
+	
 	@Override
 	public GrillaTabulacion guardar(GrillaTabulacion grillatabulacion) {
 		 return grillatabulacionRepository.save(grillatabulacion);

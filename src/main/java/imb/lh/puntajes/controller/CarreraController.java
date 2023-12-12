@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import imb.lh.puntajes.entity.Carrera;
 import imb.lh.puntajes.service.ICarrera;
 import jakarta.validation.ConstraintViolationException;
+@CrossOrigin(origins = "http://127.0.0.1:5500") // Reemplaza esto con tu URL de origen
 
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 @RestController
