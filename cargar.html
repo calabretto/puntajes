@@ -4,92 +4,11 @@
   <meta charset="UTF-8">
   <title>Grilla</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* Estilos para el formulario */
-    #form-container {
-      width: 80%;
-      margin: 0 auto;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-    #formulario-container{
-      margin-bottom: 120px;
-    }
-
-    #header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 50px;
-      background-color: black;
-      padding: 50px;
-      border-radius: 30px;
-    }
-    /* Estilos para el botón 'Enviar Datos' */
-    #enviarDatos {
-      background-color: #6f90b4;
-      margin-top: 200px;
-      margin-left: 50%;
-      color: white;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      width: 50%;
-      
-    }
-
-    /* Estilos para el botón cuando se pasa el cursor por encima */
-    #enviarDatos:hover {
-      background-color: #456ca0;
-    }
-
-    /* Estilos para el botón cuando está presionado */
-    #enviarDatos:active {
-      background-color: #073f7e;
-    }
-    #aplicante-info {
-      text-align: left;
-    }
-
-    #total-general {
-      text-align: right;
-    }
-
-    /* Estilos para el formulario y total general */
-    .field {
-      margin-bottom: 10px;
-    }
-    .input{
-      background-color: #3e8e41;
-    }
-
-    #total-general {
-      position: relative;
-    }
-
-    #total-general.floating {
-      position: fixed;
-      top: 78%;
-      left: 85%;
-      transform: translateX(-50%);
-      background-color: rgba(255, 255, 255, 0.616);
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      z-index: 999;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Estilos para los resultados */
-    .resultado-field {
-      background-color: #3e8e41;
-      padding: 5px;
-      border-radius: 3px;
-      color: white;
-    }
-  </style>
+<style>
+  .descripcion-item {
+    margin-right: 3%;
+  }
+</style>
 </head>
 <body>
   <div id="form-container">
@@ -99,6 +18,9 @@
         <p>Aplicante ID: 1</p>
         <p>Materia ID: 1</p>
       </div>
+    </div>
+    <div>
+
       <div id="total-general" class="floating">
         <h2>Total General</h2>
         <div id="total-general-value">0</div>
@@ -128,7 +50,7 @@
             columna.classList.add('column');
 
             const tituloEncabezado = document.createElement('h1');
-            tituloEncabezado.textContent = `${encabezado.descripcion} - Máximo: ${encabezado.maximo} pts`;
+            tituloEncabezado.textContent = `${encabezado.descripcion}`;
             columna.appendChild(tituloEncabezado);
 
             const itemsContainer = document.createElement('div'); // Contenedor para los items
@@ -139,11 +61,12 @@
               campo.classList.add('field');
 
               const label = document.createElement('label');
-              label.setAttribute('for', `item_${item.id}`);
-              label.textContent = `${item.nombre} - ${item.valor}`; // Mostrar el nombre del ítem y su valor
+              label.setAttribute('class','descripcion-item','for', `item_${item.id}`);
+              label.textContent = `${item.nombre}`; // Mostrar el nombre del ítem y su valor
               campo.appendChild(label);
 
               const input = document.createElement('input');
+              input.setAttribute('class','entrada')
               input.setAttribute('type', 'number');
               input.setAttribute('id', `item_${item.id}`);
               input.setAttribute('name', `item_${item.id}`);

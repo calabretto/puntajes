@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Carreras y Materias</title>
+  <link rel="stylesheet" href="style.css">
+
   <style>
     /* Estilos para organizar el diseño */
     select {
@@ -11,14 +13,14 @@
   </style>
 </head>
 <body>
-
-<!-- Menú desplegable para las carreras -->
+<div>
+<div><!-- Menú desplegable para las carreras -->
 <label for="carreras">Selecciona una carrera:</label>
 <select id="carreras" onchange="mostrarMaterias()">
   <option value="">Seleccionar carrera</option>
   <!-- Aquí se generarán las opciones de las carreras con JavaScript -->
 </select>
-
+</div>
 <!-- Menú desplegable para las materias de la carrera seleccionada -->
 <div id="materias">
   <label for="materiasCarrera">Materias:</label>
@@ -26,7 +28,7 @@
     <option value="">Selecciona una carrera primero</option>
   </select>
 </div>
-
+</div>
 <script>
   // Obtener el select de carreras y el de materias
   const selectCarreras = document.getElementById('carreras');
@@ -57,7 +59,8 @@
         if (carreraSeleccionada) {
           carreraSeleccionada.materia.forEach(materia => {
             const option = document.createElement('option');
-            option.text = materia.nombre;
+            option.text = `${materia.id}: ${materia.nombre}`; // Agregar ID al nombre de la materia
+            option.value = materia.id; // Establecer el valor como el ID de la materia
             selectMaterias.appendChild(option);
           });
         } else {
