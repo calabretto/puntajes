@@ -81,6 +81,14 @@
       z-index: 999;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+
+    /* Estilos para los resultados */
+    .resultado-field {
+      background-color: #3e8e41;
+      padding: 5px;
+      border-radius: 3px;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -143,16 +151,15 @@
 
               campo.appendChild(input);
 
-              const resultado = document.createElement('input');
-              resultado.setAttribute('type', 'text');
-              resultado.setAttribute('readonly', 'readonly');
-              resultado.value = '0'; // Establecer el valor inicial en 0
+              const resultado = document.createElement('div'); // Cambiar de input a div
+              resultado.classList.add('resultado-field'); // Agregar clase para estilizar
+              resultado.textContent = '0'; // Establecer el valor inicial en el div
               campo.appendChild(resultado);
 
               input.addEventListener('input', () => {
                 const value = parseFloat(input.value) || 0;
                 const multiplicacion = value * parseFloat(item.valor) || 0; // Calcular la multiplicación con el valor del ítem
-                resultado.value = multiplicacion.toFixed(2); // Mostrar el resultado con dos decimales
+                resultado.textContent = multiplicacion.toFixed(2); // Mostrar el resultado con dos decimales
 
                 recalculateTotal(encabezado); // Recalcular el total del encabezado al modificar un valor
               });
@@ -167,9 +174,8 @@
             labelTotal.textContent = `Total ${encabezado.descripcion}`;
             totalCampo.appendChild(labelTotal);
 
-            const totalEncabezado = document.createElement('input');
-            totalEncabezado.setAttribute('type', 'text');
-            totalEncabezado.setAttribute('readonly', 'readonly');
+            const totalEncabezado = document.createElement('div'); // Cambiar de input a div
+            totalEncabezado.classList.add('resultado-field'); // Agregar clase para estilizar
             totalCampo.appendChild(totalEncabezado);
 
             columna.appendChild(itemsContainer);
@@ -188,14 +194,14 @@
                 sum += multiplicacion;
               });
 
-              totalEncabezado.value = Math.min(sum, encabezado.maximo).toFixed(2);
+              totalEncabezado.textContent = Math.min(sum, encabezado.maximo).toFixed(2);
               recalculateGeneralTotal();
             }
 
             function recalculateGeneralTotal() {
-              totalGeneralSum = Array.from(formContainer.querySelectorAll('input[type="text"][readonly="readonly"]'))
-                .filter(input => input.parentNode.textContent.includes('Total'))
-                .map(input => parseFloat(input.value) || 0)
+              totalGeneralSum = Array.from(formContainer.querySelectorAll('.resultado-field'))
+                .filter(field => field.parentNode.textContent.includes('Total'))
+                .map(field => parseFloat(field.textContent) || 0)
                 .reduce((acc, curr) => acc + curr, 0);
               totalGeneralField.textContent = totalGeneralSum.toFixed(2);
             }
