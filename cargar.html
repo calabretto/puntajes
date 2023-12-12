@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>Grilla</title>
   <link rel="stylesheet" href="style.css">
-<style>
-  .descripcion-item {
-    margin-right: 3%;
-  }
-</style>
+  <style>
+    .descripcion-item {
+      margin-right: 3%;
+    }
+  </style>
 </head>
 <body>
   <div id="form-container">
@@ -20,22 +20,18 @@
       </div>
     </div>
     <div>
-
       <div id="total-general" class="floating">
         <h2>Total General</h2>
         <div id="total-general-value">0</div>
       </div>
     </div>
-
     <div id="formulario-container">
       <!-- Aquí se llenará con los datos obtenidos -->
     </div>
-
     <button id="enviarDatos">Enviar Datos</button>
   </div>
 
   <script>
-    // Tu script JavaScript aquí...
     fetch('http://localhost:8080/api/v1/encabezado')
       .then(response => response.json())
       .then(data => {
@@ -61,22 +57,25 @@
               campo.classList.add('field');
 
               const label = document.createElement('label');
-              label.setAttribute('class','descripcion-item','for', `item_${item.id}`);
+              label.setAttribute('class', 'descripcion-item');
+              label.setAttribute('for', `item_${item.id}`);
               label.textContent = `${item.nombre}`; // Mostrar el nombre del ítem y su valor
               campo.appendChild(label);
 
               const input = document.createElement('input');
-              input.setAttribute('class','entrada')
+              input.setAttribute('class', 'entrada');
               input.setAttribute('type', 'number');
               input.setAttribute('id', `item_${item.id}`);
               input.setAttribute('name', `item_${item.id}`);
               input.setAttribute('min', '0');
+              input.setAttribute('value', '1');
 
               campo.appendChild(input);
 
               const resultado = document.createElement('div'); // Cambiar de input a div
               resultado.classList.add('resultado-field'); // Agregar clase para estilizar
               resultado.textContent = '0'; // Establecer el valor inicial en el div
+              resultado.setAttribute('name', `res_${item.id}`);
               campo.appendChild(resultado);
 
               input.addEventListener('input', () => {
@@ -139,45 +138,43 @@
         console.error('Hubo un error al obtener los datos:', error);
       });
 
-    document.getElementById('enviarDatos').addEventListener('click', () => {
-      const items = [];
+      document.getElementById('enviarDatos').addEventListener('click', () => {
+  const itemFields = document.querySelectorAll('input[id^="item_"]');
+  const itemsToSend = [];
 
-      const itemFields = document.querySelectorAll('input[id^="item_"]');
-      itemFields.forEach(field => {
-        const itemId = field.id.split('_')[1];
-        const value = field.value;
-        items.push({ itemId, puntaje: value }); // Se agrega el valor del puntaje para cada ítem
-      });
+  itemFields.forEach(field => {
+    const itemId = field.id.split('_')[1];
+    const puntaje = parseFloat(field.value) || 0;
 
-      const dataToSend = {
-        aplicante: {
-          id: 1 // Aquí el ID del aplicante
-        },
-        materia: {
-          id: 1 // Aquí el ID de la materia
-        },
-        periodo: {
-          id: 1 // Aquí el ID del periodo
-        },
-        items // La lista de ítems con sus valores
-      };
+    const dataToSend = {
+      item: { id: parseInt(itemId) },
+      aplicante: { id: 1 },
+      materia: { id: 1 },
+      periodo: { id: 1 },
+      puntaje: puntaje
+    };
 
-      fetch('http://localhost:8080/api/v1/grillatabulacion', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
+    itemsToSend.push(dataToSend);
+  });
+
+  // Envía cada objeto JSON individual a la API
+  itemsToSend.forEach(item => {
+    fetch('http://localhost:8080/api/v1/grillatabulacion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(item),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Respuesta del servidor:', data);
       })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Respuesta del servidor:', data);
-          // Manejar la respuesta del servidor si es necesario
-        })
-        .catch(error => {
-          console.error('Error al enviar los datos:', error);
-        });
-    });
-  </script>
+      .catch(error => {
+        console.error('Error al enviar los datos:', error);
+      });
+  });
+});
+</script>
 </body>
 </html>
