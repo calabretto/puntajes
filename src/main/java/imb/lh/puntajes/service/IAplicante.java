@@ -13,5 +13,4 @@ public interface IAplicante {
     public Aplicante guardar(Aplicante aplicante);
     public void eliminar(Integer id);
     public boolean existe (Integer id);
-	public List<Aplicante> obtenerAplicantesPorMateria(Integer materiaId);
 }

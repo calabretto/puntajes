@@ -10,14 +10,21 @@
 <div style="width: 80%;" id="formulario-container">
   <!-- Este div estará vacío, se llenará con los datos obtenidos -->
 </div>
+<div id="total-general">
+  <h2>Total General</h2>
+  <input type="text" readonly="readonly" id="total-general-value" value="0">
+</div>
 
 <script>
   fetch('http://localhost:8080/api/v1/encabezado')
     .then(response => response.json())
     .then(data => {
       const formContainer = document.getElementById('formulario-container');
+      const totalGeneralField = document.getElementById('total-general-value');
 
       if (data && Array.isArray(data.data)) {
+        let totalGeneralSum = 0;
+
         data.data.forEach(encabezado => {
           const columna = document.createElement('div');
           columna.classList.add('column');
@@ -27,6 +34,8 @@
           columna.appendChild(tituloEncabezado);
 
           const itemsContainer = document.createElement('div'); // Contenedor para los items
+          let totalEncabezadoSum = 0;
+
           encabezado.item.forEach(item => {
             const campo = document.createElement('div');
             campo.classList.add('field');
@@ -47,13 +56,15 @@
             const resultado = document.createElement('input');
             resultado.setAttribute('type', 'text');
             resultado.setAttribute('readonly', 'readonly');
+            resultado.value = '0'; // Establecer el valor inicial en 0
             campo.appendChild(resultado);
 
             input.addEventListener('input', () => {
               const value = parseFloat(input.value) || 0;
               const multiplicacion = value * parseFloat(item.valor) || 0; // Calcular la multiplicación con el valor del ítem
               resultado.value = multiplicacion.toFixed(2); // Mostrar el resultado con dos decimales
-              calculateTotal(); // Calcular y mostrar el total cada vez que se modifica un valor
+
+              recalculateTotal(encabezado); // Recalcular el total del encabezado al modificar un valor
             });
 
             itemsContainer.appendChild(campo);
@@ -75,9 +86,10 @@
           columna.appendChild(totalCampo);
           formContainer.appendChild(columna);
 
-          function calculateTotal() {
+          function recalculateTotal(encabezado) {
             const inputs = itemsContainer.querySelectorAll('input[type="number"]');
             let sum = 0;
+
             inputs.forEach(input => {
               const value = parseFloat(input.value) || 0;
               const itemId = parseInt(input.getAttribute('id').split('_')[1]);
@@ -85,33 +97,20 @@
               const multiplicacion = value * parseFloat(item.valor) || 0;
               sum += multiplicacion;
             });
+
             totalEncabezado.value = Math.min(sum, encabezado.maximo).toFixed(2);
+            recalculateGeneralTotal();
           }
 
-          calculateTotal(); // Calcular y mostrar el total inicial
-
-          if (encabezado.descripcion === 'Específico' && encabezado.parcial) {
-            const sumTotalesParciales = document.createElement('div'); // Campo para la suma de totales parciales
-            sumTotalesParciales.classList.add('field');
-
-            const labelSumTotalesParciales = document.createElement('label');
-            labelSumTotalesParciales.textContent = 'Suma de Totales Parciales Anteriores';
-            sumTotalesParciales.appendChild(labelSumTotalesParciales);
-
-            const sumEncabezadosParciales = data.data
-              .filter(e => e.parcial && e.descripcion !== 'Específico') // Filtrar encabezados parciales excluyendo el específico
-              .reduce((acc, curr) => {
-                return acc + parseFloat(curr.maximo); // Sumar los totales de los encabezados parciales
-              }, 0);
-
-            const sumEncabezadosParcialesInput = document.createElement('input');
-            sumEncabezadosParcialesInput.setAttribute('type', 'text');
-            sumEncabezadosParcialesInput.setAttribute('readonly', 'readonly');
-            sumEncabezadosParcialesInput.value = sumEncabezadosParciales.toFixed(2);
-            sumTotalesParciales.appendChild(sumEncabezadosParcialesInput);
-
-            formContainer.appendChild(sumTotalesParciales);
+          function recalculateGeneralTotal() {
+            totalGeneralSum = Array.from(formContainer.querySelectorAll('input[type="text"][readonly="readonly"]'))
+              .filter(input => input.parentNode.textContent.includes('Total'))
+              .map(input => parseFloat(input.value) || 0)
+              .reduce((acc, curr) => acc + curr, 0);
+            totalGeneralField.value = totalGeneralSum.toFixed(2);
           }
+
+          recalculateTotal(encabezado); // Calcular y mostrar el total inicial
         });
       } else {
         console.error('El formato de datos no es el esperado');

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario con Carreras y Materias</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="carreras-container"></div>
+
+<script>
+  fetch('http://localhost:8080/api/v1/carrera')
+    .then(response => response.json())
+    .then(data => {
+      const carrerasContainer = document.getElementById('carreras-container');
+
+      if (data && Array.isArray(data)) {
+        data.forEach(carrera => {
+          const carreraElement = document.createElement('div');
+          carreraElement.classList.add('carrera');
+
+          const tituloCarrera = document.createElement('h1');
+          tituloCarrera.textContent = carrera.nombre;
+          carreraElement.appendChild(tituloCarrera);
+
+          const materiasContainer = document.createElement('ul'); // Contenedor para las materias
+
+          carrera.materia.forEach(materia => {
+            const materiaItem = document.createElement('li');
+            materiaItem.textContent = materia.nombre;
+            materiasContainer.appendChild(materiaItem);
+          });
+
+          carreraElement.appendChild(materiasContainer);
+          carrerasContainer.appendChild(carreraElement);
+        });
+      } else {
+        console.error('El formato de datos no es el esperado');
+      }
+    })
+    .catch(error => {
+      console.error('Hubo un error al obtener los datos:', error);
+    });
+</script>
+
+</body>
+</html>

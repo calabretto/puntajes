@@ -1,5 +1,7 @@
 package imb.lh.puntajes.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +18,9 @@ public class Materia {
 	private boolean habilitado;
 	@ManyToOne
 	@JoinColumn(name="carrera_id")
+	@JsonIgnore
 	private Carrera carrera;
+	
 	public Integer getId() {
 		return id;
 	}
