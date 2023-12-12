@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carreras y Materias</title>
+  <style>
+    /* Estilos para organizar el diseño */
+    select {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Menú desplegable para las carreras -->
+<label for="carreras">Selecciona una carrera:</label>
+<select id="carreras" onchange="mostrarMaterias()">
+  <option value="">Seleccionar carrera</option>
+  <!-- Aquí se generarán las opciones de las carreras con JavaScript -->
+</select>
+
+<!-- Menú desplegable para las materias de la carrera seleccionada -->
+<div id="materias">
+  <label for="materiasCarrera">Materias:</label>
+  <select id="materiasCarrera">
+    <option value="">Selecciona una carrera primero</option>
+  </select>
+</div>
+
+<script>
+  // Obtener el select de carreras y el de materias
+  const selectCarreras = document.getElementById('carreras');
+  const selectMaterias = document.getElementById('materiasCarrera');
+
+  // Función para mostrar las materias de la carrera seleccionada
+  function mostrarMaterias() {
+    const selectedIndex = selectCarreras.selectedIndex;
+
+    // Limpiar las opciones anteriores en el select de materias
+    selectMaterias.innerHTML = '';
+
+    if (selectedIndex === 0) {
+      const defaultOption = document.createElement('option');
+      defaultOption.text = 'Selecciona una carrera primero';
+      selectMaterias.appendChild(defaultOption);
+      return;
+    }
+
+    // Obtener la URL para obtener los datos JSON de las carreras
+    const url = `http://localhost:8080/api/v1/carrera`;
+
+    // Realizar la petición fetch para obtener los datos
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const carreraSeleccionada = data.data.find(carrera => carrera.id === selectedIndex);
+        if (carreraSeleccionada) {
+          carreraSeleccionada.materia.forEach(materia => {
+            const option = document.createElement('option');
+            option.text = materia.nombre;
+            selectMaterias.appendChild(option);
+          });
+        } else {
+          console.error('Carrera no encontrada');
+        }
+      })
+      .catch(error => console.error('Error al obtener los datos:', error));
+  }
+
+  // Llenar el select de carreras con los datos obtenidos al cargar la página
+  window.onload = function () {
+    // Obtener la URL para obtener los datos JSON de las carreras
+    const url = `http://localhost:8080/api/v1/carrera`;
+
+    // Realizar la petición fetch para obtener los datos
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        data.data.forEach(carrera => {
+          const option = document.createElement('option');
+          option.text = carrera.nombre;
+          option.value = carrera.id; // Establecer el valor como el ID de la carrera
+          selectCarreras.appendChild(option);
+        });
+      })
+      .catch(error => console.error('Error al obtener los datos:', error));
+  };
+</script>
+</body>
+</html>
