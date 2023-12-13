@@ -358,3 +358,21 @@ select {
   border-radius: 5px; /* Borde redondeado */
   
 }
+
+/* style.css */
+
+select {
+  margin-bottom: 10px;
+}
+
+#dniContainer {
+  margin-bottom: 10px;
+}
+
+#dniCheck {
+  color: green;
+}
+
+#dniCross {
+  color: red;
+}

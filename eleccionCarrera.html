@@ -4,90 +4,229 @@
   <meta charset="UTF-8">
   <title>Carreras y Materias</title>
   <link rel="stylesheet" href="style.css">
-
-  <style>
-    /* Estilos para organizar el diseño */
-    select {
-      margin-bottom: 10px;
-    }
-  </style>
 </head>
 <body>
-<div>
-<div><!-- Menú desplegable para las carreras -->
-<label for="carreras">Selecciona una carrera:</label>
-<select id="carreras" onchange="mostrarMaterias()">
-  <option value="">Seleccionar carrera</option>
-  <!-- Aquí se generarán las opciones de las carreras con JavaScript -->
-</select>
-</div>
-<!-- Menú desplegable para las materias de la carrera seleccionada -->
-<div id="materias">
-  <label for="materiasCarrera">Materias:</label>
-  <select id="materiasCarrera">
-    <option value="">Selecciona una carrera primero</option>
-  </select>
-</div>
-</div>
-<script>
-  // Obtener el select de carreras y el de materias
-  const selectCarreras = document.getElementById('carreras');
-  const selectMaterias = document.getElementById('materiasCarrera');
+  <div>
+    <!-- Input para el DNI del profesor -->
+    <div id="dniContainer">
+      <label for="dni">DNI de profesor:</label>
+      <input type="text" id="dni" onkeydown="validarDNI(event)">
+      <span id="dniCheck" style="display: none;">✔</span>
+      <span id="dniCross" style="display: none;">✘</span>
+    </div>
 
-  // Función para mostrar las materias de la carrera seleccionada
-  function mostrarMaterias() {
-    const selectedIndex = selectCarreras.selectedIndex;
+    <!-- Desplegable para el periodo -->
+    <div>
+      <label for="periodo">Selecciona un periodo:</label>
+      <select id="periodo" onchange="almacenarPeriodo()">
+        <option value="">Seleccionar periodo</option>
+        <!-- Aquí se generarán las opciones de los periodos con JavaScript -->
+      </select>
+    </div>
 
-    // Limpiar las opciones anteriores en el select de materias
-    selectMaterias.innerHTML = '';
+    <!-- Menú desplegable para las carreras -->
+    <div>
+      <label for="carreras">Selecciona una carrera:</label>
+      <select id="carreras" onchange="mostrarMaterias()">
+        <option value="">Seleccionar carrera</option>
+        <!-- Aquí se generarán las opciones de las carreras con JavaScript -->
+      </select>
+    </div>
 
-    if (selectedIndex === 0) {
-      const defaultOption = document.createElement('option');
-      defaultOption.text = 'Selecciona una carrera primero';
-      selectMaterias.appendChild(defaultOption);
-      return;
+    <!-- Menú desplegable para las materias de la carrera seleccionada -->
+    <div id="materias">
+      <label for="materiasCarrera">Materias:</label>
+      <select id="materiasCarrera" onchange="almacenarMateria()">
+        <option value="">Selecciona una materia primero</option>
+        <!-- Aquí se generarán las opciones de las materias con JavaScript -->
+      </select>
+    </div>
+
+    <!-- Botón para continuar -->
+    <div>
+      <button id="continuarButton" onclick="navegarAContinuar()" disabled>Continuar</button>
+    </div>
+  </div>
+
+  <script>
+    // Obtener los elementos del periodo, DNI, carreras y materias
+    const selectPeriodo = document.getElementById('periodo');
+    const inputDNI = document.getElementById('dni');
+    const dniCheck = document.getElementById('dniCheck');
+    const dniCross = document.getElementById('dniCross');
+    const selectCarreras = document.getElementById('carreras');
+    const selectMaterias = document.getElementById('materiasCarrera');
+    const continuarButton = document.getElementById('continuarButton');
+
+    let aplicanteId = null; // Variable para almacenar el ID del aplicante
+    let periodoSeleccionadoId = null; // Variable para almacenar el ID del periodo seleccionado
+    let materiasSeleccionadas = []; // Array para almacenar las materias seleccionadas
+
+    // Función para validar el DNI del profesor al presionar "Enter"
+    function validarDNI(event) {
+      if (event.key === 'Enter') {
+        const dniValue = inputDNI.value;
+
+        // Verificar que el valor sea un número entero y esté entre 7 y 8 caracteres
+        if (/^\d{7,8}$/.test(dniValue)) {
+          // Realizar la petición fetch para obtener los datos del aplicante
+          const url = `http://localhost:8080/api/v1/aplicante/dni/${dniValue}`;
+
+          fetch(url)
+            .then(response => {
+              if (response.ok) {
+                return response.json(); // Convertir la respuesta a JSON
+              } else {
+                return Promise.reject('Error en la respuesta del servidor'); // Rechazar la promesa en caso de error
+              }
+            })
+            .then(data => {
+              // Mostrar el check verde y ocultar la X roja
+              dniCheck.style.display = 'inline';
+              dniCross.style.display = 'none';
+
+              // Almacenar el ID del aplicante
+              aplicanteId = data.data.id;
+              // Habilitar el botón de continuar si se cumplen las condiciones
+              habilitarBotonContinuar();
+            })
+            .catch(error => {
+              console.error('Error al obtener los datos del aplicante:', error);
+              // Mostrar la X roja y ocultar el check verde
+              dniCheck.style.display = 'none';
+              dniCross.style.display = 'inline';
+
+              aplicanteId = null; // Restablecer el ID del aplicante
+              // Deshabilitar el botón de continuar si no se cumplen las condiciones
+              deshabilitarBotonContinuar();
+            });
+        } else {
+          // Ocultar el check y la X si el DNI no cumple con los requisitos
+          dniCheck.style.display = 'none';
+          dniCross.style.display = 'none';
+
+          aplicanteId = null; // Restablecer el ID del aplicante
+          // Deshabilitar el botón de continuar si no se cumplen las condiciones
+          deshabilitarBotonContinuar();
+        }
+      }
     }
 
-    // Obtener la URL para obtener los datos JSON de las carreras
-    const url = `http://localhost:8080/api/v1/carrera`;
+    // Función para almacenar el ID del periodo seleccionado
+    function almacenarPeriodo() {
+      periodoSeleccionadoId = selectPeriodo.value;
+      // Habilitar el botón de continuar si se cumplen las condiciones
+      habilitarBotonContinuar();
+    }
 
-    // Realizar la petición fetch para obtener los datos
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const carreraSeleccionada = data.data.find(carrera => carrera.id === selectedIndex);
-        if (carreraSeleccionada) {
-          carreraSeleccionada.materia.forEach(materia => {
+    // Función para almacenar la materia seleccionada
+    function almacenarMateria() {
+      const materiaSeleccionada = selectMaterias.value;
+
+      // Verificar si la materia ya está en el array de materias seleccionadas
+      if (!materiasSeleccionadas.includes(materiaSeleccionada)) {
+        materiasSeleccionadas.push(materiaSeleccionada);
+      }
+
+      // Habilitar el botón de continuar si se cumplen las condiciones
+      habilitarBotonContinuar();
+    }
+
+    // Función para habilitar el botón de continuar si se cumplen las condiciones
+    function habilitarBotonContinuar() {
+      if (aplicanteId !== null && periodoSeleccionadoId !== null && materiasSeleccionadas.length > 0) {
+        continuarButton.disabled = false;
+      } else {
+        continuarButton.disabled = true;
+      }
+    }
+
+    // Función para deshabilitar el botón de continuar
+    function deshabilitarBotonContinuar() {
+      continuarButton.disabled = true;
+    }
+
+    // Función para mostrar las materias de la carrera seleccionada
+    function mostrarMaterias() {
+      const selectedIndex = selectCarreras.selectedIndex;
+
+      // Limpiar las opciones anteriores en el select de materias
+      selectMaterias.innerHTML = '';
+
+      if (selectedIndex === 0) {
+        const defaultOption = document.createElement('option');
+        defaultOption.text = 'Selecciona una carrera primero';
+        selectMaterias.appendChild(defaultOption);
+        return;
+      }
+
+      // Obtener la URL para obtener los datos JSON de las carreras
+      const url = `http://localhost:8080/api/v1/carrera`;
+
+      // Realizar la petición fetch para obtener los datos
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const carreraSeleccionada = data.data.find(carrera => carrera.id === selectedIndex);
+          if (carreraSeleccionada) {
+            carreraSeleccionada.materia.forEach(materia => {
+              const option = document.createElement('option');
+              option.text = `${materia.id}: ${materia.nombre}`; // Agregar ID al nombre de la materia
+              option.value = materia.id; // Establecer el valor como el ID de la materia
+              selectMaterias.appendChild(option);
+            });
+          } else {
+            console.error('Carrera no encontrada');
+          }
+        })
+        .catch(error => console.error('Error al obtener los datos:', error));
+    }
+
+    // Función para navegar a la página de carga al hacer clic en el botón de continuar
+    function navegarAContinuar() {
+      // Verificar que los campos necesarios estén seleccionados antes de navegar
+      if (aplicanteId !== null && periodoSeleccionadoId !== null && materiasSeleccionadas.length > 0) {
+        // Construir la URL con los parámetros necesarios
+        const url = `http://127.0.0.1:5500/puntajes/cargar.html?idAplicante=${aplicanteId}&idPeriodo=${periodoSeleccionadoId}&idMaterias=${materiasSeleccionadas.join(',')}`;
+        // Navegar a la nueva página
+        window.location.href = url;
+      }
+    }
+
+    // Llenar el select de carreras con los datos obtenidos al cargar la página
+    window.onload = function () {
+      // Obtener la URL para obtener los datos JSON de los periodos
+      const urlPeriodos = `http://localhost:8080/api/v1/periodo`;
+
+      // Realizar la petición fetch para obtener los datos de los periodos
+      fetch(urlPeriodos)
+        .then(response => response.json())
+        .then(data => {
+          data.data.forEach(periodo => {
             const option = document.createElement('option');
-            option.text = `${materia.id}: ${materia.nombre}`; // Agregar ID al nombre de la materia
-            option.value = materia.id; // Establecer el valor como el ID de la materia
-            selectMaterias.appendChild(option);
+            option.text = periodo.nombre;
+            option.value = periodo.id; // Establecer el valor como el ID del periodo
+            selectPeriodo.appendChild(option);
           });
-        } else {
-          console.error('Carrera no encontrada');
-        }
-      })
-      .catch(error => console.error('Error al obtener los datos:', error));
-  }
+        })
+        .catch(error => console.error('Error al obtener los datos de los periodos:', error));
 
-  // Llenar el select de carreras con los datos obtenidos al cargar la página
-  window.onload = function () {
-    // Obtener la URL para obtener los datos JSON de las carreras
-    const url = `http://localhost:8080/api/v1/carrera`;
+      // Obtener la URL para obtener los datos JSON de las carreras
+      const urlCarreras = `http://localhost:8080/api/v1/carrera`;
 
-    // Realizar la petición fetch para obtener los datos
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        data.data.forEach(carrera => {
-          const option = document.createElement('option');
-          option.text = carrera.nombre;
-          option.value = carrera.id; // Establecer el valor como el ID de la carrera
-          selectCarreras.appendChild(option);
-        });
-      })
-      .catch(error => console.error('Error al obtener los datos:', error));
-  };
-</script>
+      // Realizar la petición fetch para obtener los datos de las carreras
+      fetch(urlCarreras)
+        .then(response => response.json())
+        .then(data => {
+          data.data.forEach(carrera => {
+            const option = document.createElement('option');
+            option.text = carrera.nombre;
+            option.value = carrera.id; // Establecer el valor como el ID de la carrera
+            selectCarreras.appendChild(option);
+          });
+        })
+        .catch(error => console.error('Error al obtener los datos de las carreras:', error));
+    };
+  </script>
 </body>
 </html>
