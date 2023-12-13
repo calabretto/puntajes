@@ -28,163 +28,133 @@
     <div id="formulario-container">
       <!-- Aquí se llenará con los datos obtenidos -->
     </div>
-    <button id="enviarDatos">Enviar Datos</button>
   </div>
 
   <script>
-    fetch('http://localhost:8080/api/v1/encabezado')
-      .then(response => response.json())
-      .then(encabezados => {
-        const aplicanteId = 1;
-        const periodoId = 1;
-        const materiaId = 1;
+fetch('http://localhost:8080/api/v1/encabezado')
+    .then(response => response.json())
+    .then(data => {
+      const formContainer = document.getElementById('formulario-container');
+      const totalGeneralField = document.getElementById('total-general-value');
 
-        fetch(`http://localhost:8080/api/v1/grillatabulacion/${aplicanteId}/${periodoId}/${materiaId}`)
-          .then(response => response.json())
-          .then(data => {
-            const formContainer = document.getElementById('formulario-container');
-            const totalGeneralField = document.getElementById('total-general-value');
+      if (data && Array.isArray(data.data)) {
+        let totalGeneralSum = 0;
 
-            if (data && Array.isArray(data.data) && encabezados && Array.isArray(encabezados.data)) {
-              let totalGeneralSum = 0;
+        data.data.forEach(encabezado => {
+          const columna = document.createElement('div');
+          columna.classList.add('column');
 
-              encabezados.data.forEach(encabezado => {
-                const columna = document.createElement('div');
-                columna.classList.add('column');
+          const tituloEncabezado = document.createElement('h1');
+          tituloEncabezado.textContent = `${encabezado.descripcion}`;
+          columna.appendChild(tituloEncabezado);
 
-                const tituloEncabezado = document.createElement('h1');
-                tituloEncabezado.textContent = `${encabezado.descripcion}`;
-                columna.appendChild(tituloEncabezado);
+          const itemsContainer = document.createElement('div'); // Contenedor para los items
 
-                const itemsContainer = document.createElement('div');
-                let totalEncabezadoSum = 0;
+          encabezado.item.forEach(item => {
+            const campo = document.createElement('div');
+            campo.classList.add('field');
 
-                encabezado.item.forEach(item => {
-                  const campo = document.createElement('div');
-                  campo.classList.add('field');
+            const label = document.createElement('label');
+            label.setAttribute('class', 'descripcion-item');
+            label.setAttribute('for', `item_${item.id}`);
+            label.textContent = `${item.nombre}`; // Mostrar el nombre del ítem
+            campo.appendChild(label);
 
-                  const label = document.createElement('label');
-                  label.setAttribute('class', 'descripcion-item');
-                  label.setAttribute('for', `item_${item.id}`);
-                  label.textContent = `${item.nombre}`;
-                  campo.appendChild(label);
+            const input = document.createElement('input');
+            input.setAttribute('class', 'entrada');
+            input.setAttribute('type', 'number');
+            input.setAttribute('id', `item_${item.id}`);
+            input.setAttribute('name', `item_${item.id}`);
+            input.setAttribute('min', '0');
+            input.setAttribute('value', '0'); // Inicialmente establecido como 0
 
-                  const input = document.createElement('input');
-                  input.setAttribute('class', 'entrada');
-                  input.setAttribute('type', 'number');
-                  input.setAttribute('id', `item_${item.id}`);
-                  input.setAttribute('name', `item_${item.id}`);
-                  input.setAttribute('min', '0');
-                  input.setAttribute('value', '1');
-
-                  campo.appendChild(input);
-
-                  const resultado = document.createElement('div');
-                  resultado.classList.add('resultado-field');
-                  resultado.textContent = '0';
-                  resultado.setAttribute('name', `res_${item.id}`);
-                  campo.appendChild(resultado);
-
-                  input.addEventListener('input', () => {
-                    const value = parseFloat(input.value) || 0;
-                    const multiplicacion = value * parseFloat(item.valor) || 0;
-                    resultado.textContent = multiplicacion.toFixed(2);
-
-                    recalculateTotal(encabezado);
-                  });
-
-                  itemsContainer.appendChild(campo);
-                });
-
-                const totalCampo = document.createElement('div');
-                totalCampo.classList.add('field');
-
-                const labelTotal = document.createElement('label');
-                labelTotal.textContent = `Total ${encabezado.descripcion}`;
-                totalCampo.appendChild(labelTotal);
-
-                const totalEncabezado = document.createElement('div');
-                totalEncabezado.classList.add('resultado-field');
-                totalCampo.appendChild(totalEncabezado);
-
-                columna.appendChild(itemsContainer);
-                columna.appendChild(totalCampo);
-                formContainer.appendChild(columna);
-
-                function recalculateTotal(encabezado) {
-                  const inputs = itemsContainer.querySelectorAll('input[type="number"]');
-                  let sum = 0;
-
-                  inputs.forEach(input => {
-                    const value = parseFloat(input.value) || 0;
-                    const itemId = parseInt(input.getAttribute('id').split('_')[1]);
-                    const item = encabezado.item.find(item => item.id === itemId);
-                    const multiplicacion = value * parseFloat(item.valor) || 0;
-                    sum += multiplicacion;
-                  });
-
-                  totalEncabezado.textContent = Math.min(sum, encabezado.maximo).toFixed(2);
-                  recalculateGeneralTotal();
-                }
-
-                function recalculateGeneralTotal() {
-                  totalGeneralSum = Array.from(formContainer.querySelectorAll('.resultado-field'))
-                    .filter(field => field.parentNode.textContent.includes('Total'))
-                    .map(field => parseFloat(field.textContent) || 0)
-                    .reduce((acc, curr) => acc + curr, 0);
-                  totalGeneralField.textContent = totalGeneralSum.toFixed(2);
-                }
-
-                recalculateTotal(encabezado);
-              });
-            } else {
-              console.error('El formato de datos no es el esperado');
-            }
-          })
-          .catch(error => {
-            console.error('Hubo un error al obtener los datos de grillatabulacion:', error);
+            campo.appendChild(input);
+            columna.appendChild(campo);
           });
-      })
-      .catch(error => {
-        console.error('Hubo un error al obtener los datos de encabezado:', error);
+
+          formContainer.appendChild(columna);
+        });
+      } else {
+        console.error('El formato de datos no es el esperado');
+      }
+    })
+    .catch(error => {
+      console.error('Hubo un error al obtener los datos:', error);
+    });
+    // Llamada a la API grillatabulacion
+fetch('http://localhost:8080/api/v1/grillatabulacion/1/1/1')
+  .then(response => response.json())
+  .then(data => {
+    if (data && Array.isArray(data.data)) {
+      data.data.forEach(item => {
+        const inputField = document.getElementById(`item_${item.item.id}`);
+        if (inputField) {
+          inputField.value = item.puntaje;
+        }
       });
+    } else {
+      console.error('El formato de datos de grillatabulacion no es el esperado');
+    }
+  })
+  .catch(error => {
+    console.error('Hubo un error al obtener los datos de grillatabulacion:', error);
+  });
+  function initializeMultiplication() {
+  const columnas = document.querySelectorAll('.column');
 
-    document.getElementById('enviarDatos').addEventListener('click', () => {
-      const itemFields = document.querySelectorAll('input[id^="item_"]');
-      const itemsToSend = [];
+  columnas.forEach(columna => {
+    const itemsContainer = columna.querySelector('.items-container');
 
-      itemFields.forEach(field => {
-        const itemId = field.id.split('_')[1];
-        const puntaje = parseFloat(field.value) || 0;
+    const inputs = itemsContainer.querySelectorAll('input[type="number"]');
+    const resultadoFields = columna.querySelectorAll('.resultado-field');
 
-        const dataToSend = {
-          item: { id: parseInt(itemId) },
-          aplicante: { id: 1 },
-          materia: { id: 1 },
-          periodo: { id: 1 },
-          puntaje: puntaje
-        };
-
-        itemsToSend.push(dataToSend);
-      });
-
-      itemsToSend.forEach(item => {
-        fetch('http://localhost:8080/api/v1/grillatabulacion', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(item),
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Respuesta del servidor:', data);
-          })
-          .catch(error => {
-            console.error('Error al enviar los datos:', error);
-          });
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        const encabezado = input.closest('.column');
+        recalculateTotal(encabezado);
       });
     });
+
+    function recalculateTotal(encabezado) {
+      const inputs = encabezado.querySelectorAll('input[type="number"]');
+      let sum = 0;
+
+      inputs.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        const itemId = parseInt(input.getAttribute('id').split('_')[1]);
+        const item = encabezado.item.find(item => item.id === itemId);
+        const multiplicacion = value * parseFloat(item.valor) || 0;
+        sum += multiplicacion;
+      });
+
+      const totalEncabezado = encabezado.querySelector('.total-encabezado');
+      totalEncabezado.textContent = Math.min(sum, encabezado.maximo).toFixed(2);
+      recalculateGeneralTotal();
+    }
+
+    function recalculateGeneralTotal() {
+      const generalTotalFields = document.querySelectorAll('.total-encabezado');
+      let totalGeneralSum = 0;
+
+      generalTotalFields.forEach(field => {
+        totalGeneralSum += parseFloat(field.textContent) || 0;
+      });
+
+      const totalGeneral = document.getElementById('total-general-value');
+      totalGeneral.textContent = totalGeneralSum.toFixed(2);
+    }
+
+    recalculateTotal(columna);
+  });
+}
+
+// Llamada para inicializar la multiplicación al cargar el formulario
+initializeMultiplication();
+
+console.log('Data obtenida:', data); // Verificar si los datos de la API son correctos
+console.log('Item a establecer:', item); // Verificar los datos de cada item obtenido
+console.log('Campo de entrada:', inputField); // Verificar si se encuentra el campo de entrada
+console.log('Valor a establecer:', item.puntaje); // Verificar el valor a establecer en el campo
   </script>
 </body>
 </html>
