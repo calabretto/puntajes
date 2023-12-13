@@ -65,45 +65,49 @@
             const itemsContainer = document.createElement('div');
             let totalEncabezadoSum = 0;
 
-            encabezado.item.forEach(item => {
-              const campo = document.createElement('div');
-              campo.classList.add('field');
+encabezado.item.forEach(item => {
+  const container = document.createElement('div');
+  container.classList.add('field-container');
 
-              const label = document.createElement('label');
-              label.setAttribute('class', 'descripcion-item');
-              label.setAttribute('for', `item_${item.id}`);
-              label.textContent = `${item.nombre}`;
-              campo.appendChild(label);
+  const label = document.createElement('label');
+  label.setAttribute('class', 'descripcion-item');
+  label.setAttribute('for', `item_${item.id}`);
+  label.textContent = `${item.nombre}`;
+  container.appendChild(label);
 
-              const input = document.createElement('input');
-              input.setAttribute('class', 'entrada');
-              input.setAttribute('type', 'number');
-              input.setAttribute('id', `item_${item.id}`);
-              input.setAttribute('name', `item_${item.id}`);
-              input.setAttribute('min', '0');
-              input.setAttribute('value', '0');
+  const campo = document.createElement('div');
+  campo.classList.add('field');
 
-              campo.appendChild(input);
+  const input = document.createElement('input');
+  input.setAttribute('class', 'entrada');
+  input.setAttribute('type', 'number');
+  input.setAttribute('id', `item_${item.id}`);
+  input.setAttribute('name', `item_${item.id}`);
+  input.setAttribute('min', '0');
+  input.setAttribute('value', '0');
 
-              const resultado = document.createElement('div');
-              resultado.classList.add('resultado-field');
-              resultado.textContent = '0';
-              resultado.setAttribute('name', `res_${item.id}`);
-              campo.appendChild(resultado);
+  campo.appendChild(input);
 
-              input.addEventListener('input', () => {
-                const value = parseFloat(input.value) || 0;
-                const multiplicacion = value * parseFloat(item.valor) || 0;
-                resultado.textContent = multiplicacion.toFixed(2);
+  const resultado = document.createElement('div');
+  resultado.classList.add('resultado-field');
+  resultado.textContent = '0';
+  resultado.setAttribute('name', `res_${item.id}`);
+  campo.appendChild(resultado);
 
-                recalculateTotal(encabezado);
-              });
+  input.addEventListener('input', () => {
+    const value = parseFloat(input.value) || 0;
+    const multiplicacion = value * parseFloat(item.valor) || 0;
+    resultado.textContent = multiplicacion.toFixed(2);
 
-              itemsContainer.appendChild(campo);
-            });
+    recalculateTotal(encabezado);
+  });
+
+  container.appendChild(campo);
+  itemsContainer.appendChild(container);
+});
 
             const totalCampo = document.createElement('div');
-            totalCampo.classList.add('field');
+            totalCampo.classList.add('fieldtotal');
 
             const labelTotal = document.createElement('label');
             labelTotal.textContent = `Total ${encabezado.descripcion}`;

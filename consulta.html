@@ -34,6 +34,14 @@
       </select>
     </div>
 
+    <div id="aplicantes">
+      <label for="aplicantesList">Selecciona un aplicante:</label>
+      <select id="aplicantesList">
+        <option value="">Seleccionar aplicante</option>
+        <!-- Aquí se generarán las opciones de los aplicantes con JavaScript -->
+      </select>
+    </div>
+
     <!-- Botón para continuar -->
     <div>
       <button id="continuarButton" onclick="navegarAContinuar()" disabled>Continuar</button>
@@ -91,7 +99,29 @@
           }
         })
         .catch(error => console.error('Error al obtener los datos:', error));
-      
+      const selectAplicantes = document.getElementById('aplicantesList');
+
+  // Función para obtener y mostrar los aplicantes según la selección de periodo y materia
+  function mostrarAplicantes() {
+    if (periodoSeleccionadoId !== null && materiaSeleccionadaId !== null) {
+      const url = `http://localhost:8080/api/v1/grillatabulacion/materia/${materiaSeleccionadaId}/periodo/${periodoSeleccionadoId}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          // Limpiar las opciones anteriores en el select de aplicantes
+          selectAplicantes.innerHTML = '';
+
+          data.data.forEach(aplicante => {
+            const option = document.createElement('option');
+            option.text = `${aplicante.id}: ${aplicante.nombre} ${aplicante.apellido}`; // Agregar ID, nombre y apellido
+            option.value = aplicante.id; // Establecer el valor como el ID del aplicante
+            selectAplicantes.appendChild(option);
+          });
+        })
+        .catch(error => console.error('Error al obtener los datos de aplicantes:', error));
+    }
+  }
       // Almacenar el ID de la materia seleccionada
       materiaSeleccionadaId = selectCarreras.value;
       // Habilitar el botón de continuar si se cumplen las condiciones
