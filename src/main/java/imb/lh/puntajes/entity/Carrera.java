@@ -1,6 +1,8 @@
 package imb.lh.puntajes.entity;
 
+
 import java.util.List;
+
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +19,7 @@ public class Carrera {
 	private boolean habilitado;
 	@OneToMany(mappedBy="carrera")
 	private List<Materia> materia;
-	
+
 	public List<Materia> getMateria() {
 		return materia;
 	}

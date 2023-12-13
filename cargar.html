@@ -81,7 +81,7 @@
               input.setAttribute('id', `item_${item.id}`);
               input.setAttribute('name', `item_${item.id}`);
               input.setAttribute('min', '0');
-              input.setAttribute('value', '1');
+              input.setAttribute('value', '0');
 
               campo.appendChild(input);
 
@@ -109,8 +109,10 @@
             labelTotal.textContent = `Total ${encabezado.descripcion}`;
             totalCampo.appendChild(labelTotal);
 
+
             const totalEncabezado = document.createElement('div');
             totalEncabezado.classList.add('resultado-field');
+
             totalCampo.appendChild(totalEncabezado);
 
             columna.appendChild(itemsContainer);
@@ -134,12 +136,22 @@
             }
 
             function recalculateGeneralTotal() {
-              totalGeneralSum = Array.from(formContainer.querySelectorAll('.resultado-field'))
-                .filter(field => field.parentNode.textContent.includes('Total'))
-                .map(field => parseFloat(field.textContent) || 0)
-                .reduce((acc, curr) => acc + curr, 0);
-              totalGeneralField.textContent = totalGeneralSum.toFixed(2);
-            }
+  const totalFields = formContainer.querySelectorAll('.resultado-total-field');
+
+  console.log('Total fields:', totalFields);
+
+  totalGeneralSum = Array.from(totalFields)
+    .map(field => {
+      const fieldValue = parseFloat(field.textContent) || 0;
+      console.log('Field value:', fieldValue);
+      return fieldValue;
+    })
+    .reduce((acc, curr) => acc + curr, 0);
+
+  console.log('Total General Sum:', totalGeneralSum);
+
+  totalGeneralField.textContent = totalGeneralSum.toFixed(2);
+}
 
             recalculateTotal(encabezado);
           });
@@ -151,7 +163,46 @@
         console.error('Hubo un error al obtener los datos:', error);
       });
 
-    // ... Resto del código ...
-  </script>
+
+      document.getElementById('enviarDatos').addEventListener('click', () => {
+  const itemFields = document.querySelectorAll('input[id^="item_"]');
+  const itemsToSend = [];
+
+  itemFields.forEach(field => {
+    const itemId = field.id.split('_')[1];
+    const puntaje = parseFloat(field.value) || 0;
+
+    const dataToSend = {
+      item: { id: parseInt(itemId) },
+      aplicante: { id: 1 },
+      materia: { id: 1 },
+      periodo: { id: 1 },
+      puntaje: puntaje
+    };
+
+    itemsToSend.push(dataToSend);
+  });
+
+  // Envía cada objeto JSON individual a la API
+  itemsToSend.forEach(item => {
+    fetch('http://localhost:8080/api/v1/grillatabulacion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(item),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Respuesta del servidor:', data);
+      })
+      .catch(error => {
+        console.error('Error al enviar los datos:', error);
+      });
+  });
+});
+
+</script>
+
 </body>
 </html>
