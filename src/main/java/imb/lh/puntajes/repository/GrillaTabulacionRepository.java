@@ -15,6 +15,6 @@ public interface GrillaTabulacionRepository extends JpaRepository<GrillaTabulaci
 	                                    @Param("materia") Integer materia, 
 	                                    @Param("periodo") Integer periodo);
 
-	
-
+	@Query("SELECT g FROM GrillaTabulacion g WHERE g.materia.id = :materia AND g.periodo.id = :periodo")
+    List<GrillaTabulacion> buscarPorMateriaYPeriodo(@Param("materia") Integer materia, @Param("periodo") Integer periodo);
 }

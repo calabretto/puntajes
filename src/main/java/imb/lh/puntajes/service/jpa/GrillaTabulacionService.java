@@ -48,4 +48,10 @@ public class GrillaTabulacionService implements IGrillaTabulacion {
 		 return id != null && grillatabulacionRepository.existsById(id);
 	}
 
+	@Override
+	public List<GrillaTabulacion> buscarPorMateriaYPeriodo(Integer materia, Integer periodo) {
+	    // Implementación para buscar por materia y periodo
+	    return grillatabulacionRepository.buscarPorMateriaYPeriodo(materia, periodo);
+	}
+
 }

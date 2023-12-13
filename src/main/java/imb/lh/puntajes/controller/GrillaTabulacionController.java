@@ -40,6 +40,14 @@ public class GrillaTabulacionController {
 	    return grillatabulaciones.isEmpty() ? ResponseUtil.notFound("No hay grilla tabulaciones para los IDs proporcionados")
 	            : ResponseUtil.success(grillatabulaciones);
 	}
+	@GetMapping("/materia/{materia}/periodo/{periodo}")
+	public ResponseEntity<APIResponse<List<GrillaTabulacion>>> buscarPorMateriaYPeriodo(
+	    @PathVariable("materia") Integer materia,
+	    @PathVariable("periodo") Integer periodo) {
+	    List<GrillaTabulacion> grillatabulaciones = grillatabulacionService.buscarPorMateriaYPeriodo(materia, periodo);
+	    return grillatabulaciones.isEmpty() ? ResponseUtil.notFound("No hay grilla tabulaciones para los IDs de materia y periodo proporcionados")
+	            : ResponseUtil.success(grillatabulaciones);
+	}
     @GetMapping("{id}")
     public ResponseEntity<APIResponse<GrillaTabulacion>> buscarGrillaTabulacionPorId(@PathVariable("id") Integer id){
     	GrillaTabulacion grillatabulacion = grillatabulacionService.buscarPorId(id);

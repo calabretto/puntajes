@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éxito</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos adicionales para el mensaje de éxito */
+        .success-message {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 50px;
+        }
+        #MensajeExito{
+            margin-bottom: 15%;
+        }
+        #volver{
+            background-color: #6f90b4;
+            
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 50%;
+               }
+    </style>
+</head>
+<body>
+    <div>
+    <div class="success-message">
+       <h1 id="MensajeExito"> Datos cargados con éxito</h1>
+       <a nclick="window.location.href="index.html" class="button" id="volver">Volver a Inicio</a>
+    </div>
+
+
+</div>
+<script>
+    let redirectTimer; // Variable para almacenar el temporizador
+
+    function redirectToIndex() {
+        redirectTimer = setTimeout(function() {
+            window.location.href = 'index.html';
+        }, 5000); // Temporizador de 5 segundos al inicio
+
+        // Reiniciar el temporizador si se mueve el mouse
+        document.addEventListener('mousemove', function() {
+            clearTimeout(redirectTimer); // Reiniciar el temporizador al mover el mouse
+            redirectTimer = setTimeout(function() {
+                window.location.href = 'index.html';
+            }, 5000); // Redireccionar a index.html después de 5 segundos de inactividad
+        });
+    }
+
+    // Llamar a la función cuando el documento esté listo
+    document.addEventListener('DOMContentLoaded', redirectToIndex);
+</script>
+</body>
+</html>

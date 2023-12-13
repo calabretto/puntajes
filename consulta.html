@@ -7,13 +7,6 @@
 </head>
 <body>
   <div>
-    <!-- Input para el DNI del profesor -->
-    <div id="dniContainer">
-      <label for="dni">DNI de profesor:</label>
-      <input type="text" id="dni" onkeydown="validarDNI(event)">
-      <span id="dniCheck" style="display: none;">✔</span>
-      <span id="dniCross" style="display: none;">✘</span>
-    </div>
 
     <!-- Desplegable para el periodo -->
     <div>
@@ -48,67 +41,14 @@
   </div>
 
   <script>
-    // Obtener los elementos del periodo, DNI, carreras y materias
+    // Obtener los elementos del periodo, carreras y materias
     const selectPeriodo = document.getElementById('periodo');
-    const inputDNI = document.getElementById('dni');
-    const dniCheck = document.getElementById('dniCheck');
-    const dniCross = document.getElementById('dniCross');
     const selectCarreras = document.getElementById('carreras');
     const selectMaterias = document.getElementById('materiasCarrera');
     const continuarButton = document.getElementById('continuarButton');
 
-    let aplicanteId = null; // Variable para almacenar el ID del aplicante
     let periodoSeleccionadoId = null; // Variable para almacenar el ID del periodo seleccionado
-
-    // Función para validar el DNI del profesor al presionar "Enter"
-    function validarDNI(event) {
-      if (event.key === 'Enter') {
-        const dniValue = inputDNI.value;
-
-        // Verificar que el valor sea un número entero y esté entre 7 y 8 caracteres
-        if (/^\d{7,8}$/.test(dniValue)) {
-          // Realizar la petición fetch para obtener los datos del aplicante
-          const url = `http://localhost:8080/api/v1/aplicante/dni/${dniValue}`;
-
-          fetch(url)
-            .then(response => {
-              if (response.ok) {
-                return response.json(); // Convertir la respuesta a JSON
-              } else {
-                return Promise.reject('Error en la respuesta del servidor'); // Rechazar la promesa en caso de error
-              }
-            })
-            .then(data => {
-              // Mostrar el check verde y ocultar la X roja
-              dniCheck.style.display = 'inline';
-              dniCross.style.display = 'none';
-
-              // Almacenar el ID del aplicante
-              aplicanteId = data.data.id;
-              // Habilitar el botón de continuar si se cumplen las condiciones
-              habilitarBotonContinuar();
-            })
-            .catch(error => {
-              console.error('Error al obtener los datos del aplicante:', error);
-              // Mostrar la X roja y ocultar el check verde
-              dniCheck.style.display = 'none';
-              dniCross.style.display = 'inline';
-
-              aplicanteId = null; // Restablecer el ID del aplicante
-              // Deshabilitar el botón de continuar si no se cumplen las condiciones
-              deshabilitarBotonContinuar();
-            });
-        } else {
-          // Ocultar el check y la X si el DNI no cumple con los requisitos
-          dniCheck.style.display = 'none';
-          dniCross.style.display = 'none';
-
-          aplicanteId = null; // Restablecer el ID del aplicante
-          // Deshabilitar el botón de continuar si no se cumplen las condiciones
-          deshabilitarBotonContinuar();
-        }
-      }
-    }
+    let materiaSeleccionadaId = null; // Variable para almacenar el ID de la materia seleccionada
 
     // Función para almacenar el ID del periodo seleccionado
     function almacenarPeriodo() {
@@ -117,21 +57,7 @@
       habilitarBotonContinuar();
     }
 
-    // Función para habilitar el botón de continuar si se cumplen las condiciones
-    function habilitarBotonContinuar() {
-      if (aplicanteId !== null && periodoSeleccionadoId !== null && selectMaterias.value !== '') {
-        continuarButton.disabled = false;
-      } else {
-        continuarButton.disabled = true;
-      }
-    }
-
-    // Función para deshabilitar el botón de continuar
-    function deshabilitarBotonContinuar() {
-      continuarButton.disabled = true;
-    }
-
-    // Función para mostrar las materias de la carrera seleccionada
+    // Función para almacenar el ID de la materia seleccionada
     function mostrarMaterias() {
       const selectedIndex = selectCarreras.selectedIndex;
 
@@ -165,75 +91,97 @@
           }
         })
         .catch(error => console.error('Error al obtener los datos:', error));
+      
+      // Almacenar el ID de la materia seleccionada
+      materiaSeleccionadaId = selectCarreras.value;
+      // Habilitar el botón de continuar si se cumplen las condiciones
+      habilitarBotonContinuar();
     }
 
-  // Función para navegar a la página de carga al hacer clic en el botón de continuar
-// Función para navegar a la página de carga al hacer clic en el botón de continuar
-function navegarAContinuar() {
-  // Verificar que los campos necesarios estén seleccionados antes de navegar
-  if (aplicanteId !== null && periodoSeleccionadoId !== null && selectMaterias.value !== '') {
-    // Obtener los valores como enteros
-    var idMateria = parseInt(selectMaterias.value);
-    var idPeriodo = parseInt(periodoSeleccionadoId);
-
-    // Verificar que los valores sean números antes de continuar
-    if (!isNaN(idMateria) && !isNaN(idPeriodo)) {
-      console.log('aplicanteId', aplicanteId);
-      console.log('idMateria', idMateria);
-      console.log('idPeriodo', idPeriodo);
-
-      // Construir la URL con los parámetros necesarios
-      const url = `http://localhost:8080/api/v1/grillatabulacion/${aplicanteId}/${idMateria}/${idPeriodo}`;
-
-      // Realizar la petición fetch para validar la grilla
-      fetch(url)
-        .then(response => {
-          if (response.ok) {
-            return response.json(); // Convertir la respuesta a JSON
-          } else {
-            return Promise.reject('Error en la respuesta del servidor'); // Rechazar la promesa en caso de error
-          }
-        })
-        .then(data => {
-          // Navegar a la página correspondiente según la validación
-          navegarSegunValidacion(data.status);
-        })
-        .catch(error => {
-          console.error('Error al validar la grilla:', error);
-          // Navegar a la página de carga en caso de error
-          navegarSegunValidacion(404);
-        });
-    } else {
-      console.error('Error: idMateria o idPeriodo no son números válidos');
+    // Función para habilitar el botón de continuar si se cumplen las condiciones
+    function habilitarBotonContinuar() {
+      if (periodoSeleccionadoId !== null && materiaSeleccionadaId !== null) {
+        continuarButton.disabled = false;
+      } else {
+        continuarButton.disabled = true;
+      }
     }
+    function navegarSegunValidacion(status) {
+  if (status === 'OK') {
+    // La validación de la grilla fue exitosa, puedes redirigir a una página de éxito o realizar alguna acción
+    console.log('La grilla ha sido validada correctamente');
+  } else {
+    // La validación de la grilla falló, puedes redirigir a una página de error o realizar alguna acción
+    console.error('La validación de la grilla ha fallado');
   }
 }
 
+    // Función para navegar a la página de carga al hacer clic en el botón de continuar
+    function navegarAContinuar() {
+      // Verificar si se han seleccionado periodo y materia
+      if (periodoSeleccionadoId !== null && materiaSeleccionadaId !== null) {
+        // Construir la URL con los parámetros necesarios
+        const url = `http://localhost:8080/api/v1/grillatabulacion/materia/${materiaSeleccionadaId}/periodo/${periodoSeleccionadoId}`;
 
-
-
-
-    // Función para navegar según el resultado de la validación
-    function navegarSegunValidacion(status) {
-      // Verificar el código de estado
-      if (status === 200) {
-        // Obtener los valores seleccionados
-        const idMateria = selectMaterias.value;
-        const idPeriodo = periodoSeleccionadoId;
-        const url = `http://127.0.0.1:5500/puntajes/consultagrilla.html?idAplicante=${aplicanteId}&idPeriodo=${idPeriodo}&idMateria=${idMateria}`;
-        window.location.href = url;
+        // Realizar la petición fetch para validar la grilla
+        fetch(url)
+          .then(response => {
+            if (response.ok) {
+              return response.json(); // Convertir la respuesta a JSON
+            } else {
+              return Promise.reject('Error en la respuesta del servidor'); // Rechazar la promesa en caso de error
+            }
+          })
+          .then(data => {
+            // Navegar a la página correspondiente según la validación
+            navegarSegunValidacion(data.status);
+          })
+          .catch(error => {
+            console.error('Error al validar la grilla:', error);
+            // Solicitar el DNI para buscar el aplicante ID
+            solicitarDNI();
+          });
       } else {
-        // Navegar a la página de carga solo si los campos están seleccionados
-        if (aplicanteId !== null && periodoSeleccionadoId !== null && selectMaterias.value !== '') {
-          const cargaUrl = `http://127.0.0.1:5500/puntajes/cargar.html?idAplicante=${aplicanteId}&idPeriodo=${periodoSeleccionadoId}&idMateria=${selectMaterias.value}`;
-          window.location.href = cargaUrl;
-        }
+        console.error('Error: No se han seleccionado periodo y materia');
+        // Solicitar el DNI para buscar el aplicante ID
+        solicitarDNI();
       }
+    }
+
+    // Función para solicitar el DNI y buscar el aplicante ID
+    function solicitarDNI() {
+      const dni = prompt('Por favor, ingresa tu DNI:');
+      if (dni) {
+        // Realizar la petición fetch para buscar el aplicante ID
+        const url = `http://localhost:8080/api/v1/aplicante/${dni}`;
+
+        fetch(url)
+          .then(response => {
+            if (response.ok) {
+              return response.json(); // Convertir la respuesta a JSON
+            } else {
+              return Promise.reject('Error en la respuesta del servidor'); // Rechazar la promesa en caso de error
+            }
+          })
+          .then(data => {
+            // Redirigir a la página de carga con los IDs obtenidos
+            redirigirACarga(data.id);
+          })
+          .catch(error => {
+            console.error('Error al buscar el aplicante:', error);
+          });
+      }
+    }
+
+    // Función para redirigir a la página de carga con los IDs obtenidos
+    function redirigirACarga(aplicanteId) {
+      const cargaUrl = `http://127.0.0.1:5500/puntajes/cargar.html?idAplicante=${aplicanteId}&idPeriodo=${periodoSeleccionadoId}&idMateria=${materiaSeleccionadaId}`;
+      window.location.href = cargaUrl;
     }
 
     // Llenar el select de carreras con los datos obtenidos al cargar la página
     window.onload = function () {
-      // Obtener la URL para obtener los datos JSON de las carreras
+      // Obtener la URL para obtener los datos JSON de los carreras
       const urlCarreras = `http://localhost:8080/api/v1/carrera`;
 
       // Obtener la URL para obtener los datos JSON de los periodos

@@ -6,11 +6,13 @@ import imb.lh.puntajes.entity.GrillaTabulacion;
 
 
 
+
 public interface IGrillaTabulacion {
-	public List<GrillaTabulacion> buscarTodos();
-	public GrillaTabulacion buscarPorId(Integer id);
-    public GrillaTabulacion guardar(GrillaTabulacion grillaTabulacion);
-    public List<GrillaTabulacion> buscarPorIds(Integer aplicante, Integer materia, Integer periodo);
-    public void eliminar(Integer id);
-    public boolean existe (Integer id);
+    List<GrillaTabulacion> buscarTodos();
+    GrillaTabulacion buscarPorId(Integer id);
+    GrillaTabulacion guardar(GrillaTabulacion grillaTabulacion);
+    List<GrillaTabulacion> buscarPorIds(Integer aplicante, Integer materia, Integer periodo);
+    List<GrillaTabulacion> buscarPorMateriaYPeriodo(Integer materia, Integer periodo);
+    void eliminar(Integer id);
+    boolean existe(Integer id);
 }
