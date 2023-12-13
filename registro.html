@@ -4,61 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Aplicante</title>
+    <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-    <form id="aplicanteForm">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required><br><br>
+    <form id="aplicanteForm" class="container">
+        <label for="nombre" class="field">
+            Nombre:
+            <input type="text" id="nombre" name="nombre" class="entrada" required>
+        </label>
     
-        <label for="apellido">Apellido:</label>
-        <input type="text" id="apellido" name="apellido" required><br><br>
+        <label for="apellido" class="field">
+            Apellido:
+            <input type="text" id="apellido" name="apellido" class="entrada" required>
+        </label>
     
-        <label for="dni">DNI:</label>
-        <input type="text" id="dni" name="dni" required><br><br>
+        <label for="dni" class="field">
+            DNI:
+            <input type="text" id="dni" name="dni" class="entrada" required>
+        </label>
     
-        <label for="email">Correo electrónico:</label>
-        <input type="email" id="email" name="email" required><br><br>
-    
-        <input type="submit" value="Registrar">
+        <label for="email" class="field">
+            Correo electrónico:
+            <input type="email" id="email" name="email" class="entrada" required>
+        </label>
+
+        <label>    
+        <input type="submit" value="Registrar" id="enviarDatoss">
+        </label>
     </form>
     
-    <script>
+     <script>
         document.getElementById("aplicanteForm").addEventListener("submit", function(event) {
-        event.preventDefault(); 
+            event.preventDefault(); 
 
-        const formData = new FormData(this); 
+            const formData = new FormData(this); 
 
-        const aplicante = {
-            id: null,
-            nombre: formData.get('nombre'),
-            apellido: formData.get('apellido'),
-            dni: parseInt(formData.get('dni')), // Asegúrate de convertir a número
-            mail: formData.get('email'),
-            habilitado: true // Podrías necesitar manejar esto desde el servidor
-        };
+            const dni = formData.get('dni');
 
-        fetch('http://localhost:8080/api/v1/aplicante', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(aplicante)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al registrar al aplicante');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Aplicante registrado:', data);
-            // Podrías mostrar un mensaje de éxito o redirigir a otra página
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            // Podrías mostrar un mensaje de error al usuario
+            // Verificar si el DNI ya existe
+            fetch(`http://localhost:8080/api/v1/aplicante/dni/${dni}`)
+                .then(response => {
+                    if (!response.ok) {
+                        document.getElementById('dniError').style.display = 'inline'; // Mostrar el mensaje de error
+                        throw new Error('El DNI ya está registrado');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Si el DNI no existe, enviar el formulario
+                    const aplicante = {
+                        id: null,
+                        nombre: formData.get('nombre'),
+                        apellido: formData.get('apellido'),
+                        dni: parseInt(formData.get('dni')),
+                        mail: formData.get('email'),
+                        habilitado: true
+                    };
+
+                    fetch('http://localhost:8080/api/v1/aplicante', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(aplicante)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al registrar al aplicante');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Aplicante registrado:', data);
+                        // Podrías mostrar un mensaje de éxito o redirigir a otra página
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Podrías mostrar un mensaje de error al usuario
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         });
-    });
     </script>
 </body>
 </html>
