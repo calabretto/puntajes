@@ -44,8 +44,7 @@ public class AplicanteService implements IAplicante {
 
 	@Override
 	public Aplicante buscarPorDNI(Integer dni) {
-		// TODO Auto-generated method stub
-		return null;
+return aplicanteRepository.findByDni(dni);		
 	}
 
 }
