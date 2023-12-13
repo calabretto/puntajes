@@ -343,6 +343,16 @@ select {
       
       width: 5%;
     }
+    .resultado-total-field {
+      background-color: #3e618e;
+      padding: 5px;
+      border-radius: 3px;
+      color: white;
+      text-align: center;
+      margin-left: 10px;
+      
+      width: 5%;
+    }
     .descripcion-item {
       align-items: center;
   }

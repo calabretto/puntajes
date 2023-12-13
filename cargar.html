@@ -68,7 +68,7 @@
               input.setAttribute('id', `item_${item.id}`);
               input.setAttribute('name', `item_${item.id}`);
               input.setAttribute('min', '0');
-              input.setAttribute('value', '1');
+              input.setAttribute('value', '0');
 
               campo.appendChild(input);
 
@@ -97,7 +97,7 @@
             totalCampo.appendChild(labelTotal);
 
             const totalEncabezado = document.createElement('div'); // Cambiar de input a div
-            totalEncabezado.classList.add('resultado-field'); // Agregar clase para estilizar
+            totalEncabezado.classList.add('resultado-total-field'); // Agregar clase para estilizar
             totalCampo.appendChild(totalEncabezado);
 
             columna.appendChild(itemsContainer);
@@ -121,12 +121,22 @@
             }
 
             function recalculateGeneralTotal() {
-              totalGeneralSum = Array.from(formContainer.querySelectorAll('.resultado-field'))
-                .filter(field => field.parentNode.textContent.includes('Total'))
-                .map(field => parseFloat(field.textContent) || 0)
-                .reduce((acc, curr) => acc + curr, 0);
-              totalGeneralField.textContent = totalGeneralSum.toFixed(2);
-            }
+  const totalFields = formContainer.querySelectorAll('.resultado-total-field');
+
+  console.log('Total fields:', totalFields);
+
+  totalGeneralSum = Array.from(totalFields)
+    .map(field => {
+      const fieldValue = parseFloat(field.textContent) || 0;
+      console.log('Field value:', fieldValue);
+      return fieldValue;
+    })
+    .reduce((acc, curr) => acc + curr, 0);
+
+  console.log('Total General Sum:', totalGeneralSum);
+
+  totalGeneralField.textContent = totalGeneralSum.toFixed(2);
+}
 
             recalculateTotal(encabezado); // Calcular y mostrar el total inicial
           });
