@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import imb.lh.puntajes.entity.Aplicante;
 import imb.lh.puntajes.entity.GrillaTabulacion;
 import imb.lh.puntajes.service.IGrillaTabulacion;
 import jakarta.validation.ConstraintViolationException;
@@ -41,10 +42,10 @@ public class GrillaTabulacionController {
 	            : ResponseUtil.success(grillatabulaciones);
 	}
 	@GetMapping("/materia/{materia}/periodo/{periodo}")
-	public ResponseEntity<APIResponse<List<GrillaTabulacion>>> buscarPorMateriaYPeriodo(
+	public ResponseEntity<APIResponse<List<Aplicante>>> buscarPorMateriaYPeriodo(
 	    @PathVariable("materia") Integer materia,
 	    @PathVariable("periodo") Integer periodo) {
-	    List<GrillaTabulacion> grillatabulaciones = grillatabulacionService.buscarPorMateriaYPeriodo(materia, periodo);
+	    List<Aplicante> grillatabulaciones = grillatabulacionService.buscarPorMateriaYPeriodo(materia, periodo);
 	    return grillatabulaciones.isEmpty() ? ResponseUtil.notFound("No hay grilla tabulaciones para los IDs de materia y periodo proporcionados")
 	            : ResponseUtil.success(grillatabulaciones);
 	}

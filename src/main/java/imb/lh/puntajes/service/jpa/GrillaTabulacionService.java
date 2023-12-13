@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import imb.lh.puntajes.entity.Aplicante;
 import imb.lh.puntajes.entity.GrillaTabulacion;
 import imb.lh.puntajes.repository.GrillaTabulacionRepository;
 import imb.lh.puntajes.service.IGrillaTabulacion;
@@ -49,7 +50,7 @@ public class GrillaTabulacionService implements IGrillaTabulacion {
 	}
 
 	@Override
-	public List<GrillaTabulacion> buscarPorMateriaYPeriodo(Integer materia, Integer periodo) {
+	public List<Aplicante> buscarPorMateriaYPeriodo(Integer materia, Integer periodo) {
 	    // Implementación para buscar por materia y periodo
 	    return grillatabulacionRepository.buscarPorMateriaYPeriodo(materia, periodo);
 	}
