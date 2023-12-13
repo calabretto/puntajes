@@ -188,7 +188,7 @@
       // Verificar que los campos necesarios estén seleccionados antes de navegar
       if (aplicanteId !== null && periodoSeleccionadoId !== null && materiasSeleccionadas.length > 0) {
         // Construir la URL con los parámetros necesarios
-        const url = `http://127.0.0.1:5500/puntajes/cargar.html?idAplicante=${aplicanteId}&idPeriodo=${periodoSeleccionadoId}&idMaterias=${materiasSeleccionadas.join(',')}`;
+        const url = `http://127.0.0.1:5500/cargar.html?idAplicante=${aplicanteId}&idPeriodo=${periodoSeleccionadoId}&idMaterias=${materiasSeleccionadas.join(',')}`;
         // Navegar a la nueva página
         window.location.href = url;
       }
