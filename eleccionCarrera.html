@@ -7,14 +7,7 @@
 </head>
 <body>
   <div>
-    <!-- Input para el DNI del profesor -->
-    <div id="dniContainer">
-      <label for="dni">DNI de profesor:</label>
-      <input type="text" id="dni" onkeydown="validarDNI(event)">
-      <span id="dniCheck" style="display: none;">✔</span>
-      <span id="dniCross" style="display: none;">✘</span>
-    </div>
-
+   
     <!-- Desplegable para el periodo -->
     <div>
       <label for="periodo">Selecciona un periodo:</label>
@@ -41,6 +34,14 @@
         <!-- Aquí se generarán las opciones de las materias con JavaScript -->
       </select>
     </div>
+
+     <!-- Input para el DNI del profesor -->
+     <div id="dniContainer">
+        <label for="dni">DNI de profesor:</label>
+        <input type="text" id="dni" onkeydown="validarDNI(event)">
+        <span id="dniCheck" style="display: none;">✔</span>
+        <span id="dniCross" style="display: none;">✘</span>
+      </div>
 
     <!-- Botón para continuar -->
     <div>
